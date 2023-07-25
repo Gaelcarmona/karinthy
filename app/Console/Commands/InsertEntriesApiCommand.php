@@ -2,12 +2,16 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AvailableEntry;
-use App\Models\Entry;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use App\Models\Entry;
+use App\Models\Redirect;
+use App\Models\AvailableEntry;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
-use Symfony\Component\DomCrawler\Crawler;
+use Illuminate\Support\Facades\Log;
+
+
 
 class InsertEntriesApiCommand extends Command
 {
@@ -44,10 +48,10 @@ class InsertEntriesApiCommand extends Command
 
         foreach ($entries as $entry) {
             $client = new Client();
-            // try {                    
-            $this->info('La page suivante est en traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . count($entries) . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+            try {                  
+            $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . count($entries) . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
 
-            $url = "https://fr.wikipedia.org/w/api.php?action=query&titles={$entry->url}&prop=links&format=json&formatversion=2&pllimit=max";
+            $url = "https://fr.wikipedia.org/w/api.php?action=query&titles={$entry->url}&prop=links&redirects&format=json&formatversion=2&pllimit=max";
 
             $response = $client->get($url);
             $statusCode = $response->getStatusCode();
@@ -56,18 +60,69 @@ class InsertEntriesApiCommand extends Command
             if ($statusCode === 200) {
                 $data = json_decode($response->getBody(), true);
 
+                if (isset($data['query']['pages']['0']['missing'])) {
+
+                    $this->info('Suppression: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                    $entry->delete();
+                    $countEntries--;
+                    continue;
+                
+                }
+
+                if (isset($data['query']['redirects']['0']['to'])) {
+
+                    $this->info('Redirection vers : ' . $data['query']['redirects']['0']['to'] . ', suppression de ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+
+                    $parentsOfOldEntry = AvailableEntry::query()->where('child_entry_id', $entry->id)->pluck('parent_entry_id')->toArray();
+
+                    $parentEntryTitle = $data['query']['redirects']['0']['to'];
+                    $parentEntryUrl = urlencode(str_replace(' ', '_', $parentEntryTitle));
+                    $newEntry = Entry::query()
+                        ->where('url', $parentEntryUrl)
+                        ->firstOrCreate([
+                            'url' => $parentEntryUrl,
+                            'title' => $parentEntryTitle,
+                        ]);
+
+                    Redirect::firstOrCreate([
+                        'title' => $entry->title,
+                        'url' => $entry->url,
+                        'redirect_to_entry_id' => $newEntry->id,
+                    ]);
+                    $entry->delete();
+                    $entry = $newEntry;
+                    
+                    foreach ($parentsOfOldEntry as $parentId) {
+                        AvailableEntry::query()
+                        ->where('parent_entry_id', $parentId)
+                        ->where('child_entry_id', $entry->id)
+                        ->firstOrCreate([
+                            'parent_entry_id' => $parentId,
+                            'child_entry_id' => $entry->id,
+                        ]);
+                    }
+                    if ($entry->has('availableChildEntries')) {
+                        $countEntries--;
+                        continue;
+                    }
+                }
+
                 if (isset($data['query']['pages']['0']['links'])) {
+
                     $this->StoreLinksOnPage($data['query']['pages']['0']['links'], $entry);
                 }
 
                 do {
                     if (isset($data['continue']['plcontinue'])) {
+
                         $plcontinue = $data['continue']['plcontinue'];
                         $url = "https://fr.wikipedia.org/w/api.php?action=query&titles={$entry->url}&prop=links&format=json&formatversion=2&pllimit=max&plcontinue={$plcontinue}";
                         $client = new Client();
                         $response = $client->get($url);
                         $data = json_decode($response->getBody(), true);
+
                         if (isset($data['query']['pages']['0']['links'])) {
+
                             $this->StoreLinksOnPage($data['query']['pages']['0']['links'], $entry);
                         }
                     }
@@ -79,10 +134,11 @@ class InsertEntriesApiCommand extends Command
                 $this->error('Erreur lors de l\'accès à la page ' . $entry->url . ' - Code de statut : ' . $statusCode . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
                 continue;
             }
-            // } catch (\Exception $e) {
-            //     $this->error('Erreur lors de l\'accès à la page ' . $entry->url . ' - ' . $e->getMessage());
-            //     continue;
-            // }
+            } catch (\Exception $e) {
+                $this->error('Erreur lors de l\'accès à la page ' . $entry->url . ' - ' . $e->getMessage());
+                Log::error([$entry->id,$e->getMessage()]); 
+                continue;
+            }
         }
     }
 
