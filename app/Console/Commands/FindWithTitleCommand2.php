@@ -218,7 +218,7 @@ class FindWithTitleCommand2 extends Command
 
             $this->info(count($onPagesSubset) . '  ' . Carbon::now());
 
-            $chunkSize = 1000; // Nombre maximal de valeurs par requête
+            $chunkSize = 100; // Nombre maximal de valeurs par requête
             $chunks = array_chunk($onPagesSubset, $chunkSize);
             foreach ($chunks as $chunk) {
 

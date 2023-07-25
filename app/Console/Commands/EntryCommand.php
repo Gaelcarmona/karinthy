@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AvailableEntry;
 use App\Models\Entry;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
@@ -29,6 +30,7 @@ class EntryCommand extends Command
      */
     public function handle()
     {
+        $dateDebut = Carbon::now();
         $url = $this->argument('url');
         $client = new Client();
 
@@ -85,5 +87,6 @@ class EntryCommand extends Command
         } catch (\Exception $e) {
             $this->error($statusCode);
         }
+        $this->info('traitement de la page ' . $parentEntry->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
     }
 }
