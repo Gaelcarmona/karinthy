@@ -63,7 +63,8 @@ class InsertEntriesApiCommand extends Command
                 if (isset($data['query']['pages']['0']['missing'])) {
 
                     $this->info('Suppression: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
-                    $entry->delete();
+                    $entry->toDelete = 1;
+                    $entry->save();
                     $countEntries--;
                     continue;
                 
@@ -89,7 +90,8 @@ class InsertEntriesApiCommand extends Command
                         'url' => $entry->url,
                         'redirect_to_entry_id' => $newEntry->id,
                     ]);
-                    $entry->delete();
+                    $entry->toDelete = 1;
+                    $entry->save();
                     $entry = $newEntry;
                     
                     foreach ($parentsOfOldEntry as $parentId) {

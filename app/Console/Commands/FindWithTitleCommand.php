@@ -110,6 +110,7 @@ class FindWithTitleCommand extends Command
 
         foreach ($allLinksOnPrecedentPages as $index => $allLinksOnPrecedentPage) {
 
+
             $this->info('traitement du parent ' .  ($index + 1) . '/' . count($allLinksOnPrecedentPages) . ' dans la profondeur ' . $depth . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
 
             $onPagesSubset = AvailableEntry::query()
@@ -119,9 +120,10 @@ class FindWithTitleCommand extends Command
                 ->toArray();
 
             $this->info(count($onPagesSubset) . '  ' . Carbon::now());
-
-            $chunkSize = 100; // Nombre maximal de valeurs par requête
+            $chunkSize = 200;
             $chunks = array_chunk($onPagesSubset, $chunkSize);
+
+            // $chunks = array_chunk(array_diff($onPagesSubset, $allLinksOnPages), $chunkSize);
             foreach ($chunks as $chunk) {
 
                 $onPages = AvailableEntry::query()

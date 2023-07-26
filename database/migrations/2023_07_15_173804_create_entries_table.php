@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title', 766)->nullable(false);
             $table->string('url', 766)->nullable(false)->unique();
+            $table->boolean('toDelete')->nullable();
             $table->timestamps();
         });
     }
