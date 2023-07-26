@@ -9,6 +9,7 @@
     </head>
     <body class="antialiased">
         <livewire:search /> 
+        <livewire:results />
         @livewireScripts
     </body>
 </html>

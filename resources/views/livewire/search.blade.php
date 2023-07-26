@@ -41,30 +41,5 @@
         </button>
     </div>
 </form>
-<div  style="text-align: center">
-
-        @foreach ($resultMessages as $message)
-       @php
-       print_r($message)
-       @endphp 
-       {{-- @dd($message) --}}
-            <p>{{ $message }}</p>
-        @endforeach
-
-</div>
-
-@push('scripts')
-    <script>
-        function reloadResultMessages() {
-            // Effectuer une requête AJAX vers le serveur pour récupérer les messages mis à jour
-            Livewire.emit('refreshResultMessages');
-        }
-
-        document.addEventListener('livewire:load', function () {
-            // Recharger la div toutes les 5 secondes (5000 millisecondes)
-            setInterval(reloadResultMessages, 5000);
-        });
-    </script>
-@endpush
 
 
