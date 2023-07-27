@@ -11,6 +11,7 @@ class Search extends Component
 {
     public string $start = '';
     public string $end = '';
+    
 
     public array $searchResults = [];
 
@@ -38,7 +39,6 @@ class Search extends Component
     {
 
         $this->emit('searchSubmitted', $this->start, $this->end);
-        // return [$this->start, $this->end];
     }
 
 

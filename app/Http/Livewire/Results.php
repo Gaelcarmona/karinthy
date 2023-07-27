@@ -37,26 +37,25 @@ class Results extends Component
             return;
         }
 
-        $allLinksOnPages1 = $this->depthEntries(2, $toPageArrival, [], $start, $arrival, $dateDebut);
-        if ($allLinksOnPages1 === null) {
+        $depth2 = $this->depthEntries(2, $start, $arrival, $dateDebut);
+        if ($depth2) {
             return;
         }
 
-        $linksAlreadyProcessed = $toPageArrival;
-        $allLinksOnPages2 = $this->depthEntries(3, $allLinksOnPages1, $linksAlreadyProcessed, $start, $arrival, $dateDebut);
-        if ($allLinksOnPages2 === null) {
+        $depth3 = $this->depthEntries(3, $start, $arrival, $dateDebut);
+        if ($depth3) {
             return;
         }
-        $linksAlreadyProcessed = array_unique(array_merge($allLinksOnPages1, $linksAlreadyProcessed));
-        $allLinksOnPages3 = $this->depthEntries(4, $allLinksOnPages2, $linksAlreadyProcessed, $start, $arrival, $dateDebut);
-        if ($allLinksOnPages3 === null) {
+        $depth4 = $this->depthEntries(4, $start, $arrival, $dateDebut);
+        if ($depth4) {
             return;
         }else {
             $this->resultMessages[] = 'On a pas trouvé :/';
+            return;
         }
     }
 
-    public function depthEntries($depth, $allLinksOnPrecedentPages, $linksAlreadyProcessed, $start, $arrival, $dateDebut)
+    public function depthEntries($depth, $start, $arrival, $dateDebut)
     {
         $resultMessages = [];
         $greatParents = $arrival->availableParentEntries;
@@ -65,8 +64,6 @@ class Results extends Component
         $count3levels = 0;
         $countPossibilities = 0;
         $greatParent = null;
-        $allLinksOnPages = [];
-
 
         foreach ($greatParents as $greatParent) {
             $greatParent = $greatParent->parentEntry;
@@ -162,23 +159,7 @@ class Results extends Component
                     $msg = 'Something went wrong.';
             }
         }
-        if ($isTrue) {
-            return;
-        }
-        $allLinksOnPrecedentPages = array_diff($allLinksOnPrecedentPages, $linksAlreadyProcessed);
-        foreach ($allLinksOnPrecedentPages as $index => $allLinksOnPrecedentPage) {
-
-            $onPagesSubset = AvailableEntry::query()
-                ->where('child_entry_id', $allLinksOnPrecedentPage)
-                ->pluck('parent_entry_id')
-                ->unique()
-                ->toArray();
-
-            $allLinksOnPages = array_merge($allLinksOnPages, $onPagesSubset);
-        }
-        $allLinksOnPages = array_unique($allLinksOnPages);
-        $allLinksOnPages = array_diff($allLinksOnPages, $linksAlreadyProcessed);
-        return $allLinksOnPages;
+        return $isTrue;
     }
 
 

@@ -32,40 +32,8 @@ class FindWithTitleCommand2 extends Command
         $prompt1 = str_replace('_', ' ', $this->argument('prompt1'));
         $prompt2 = str_replace('_', ' ', $this->argument('prompt2'));
 
-        $this->info("Vérification de la présence en bdd de ces pages ainsi que les liens vers et y menant");
         $start = Entry::query()->where('title', $prompt1)->with('availableChildEntries.childEntry')->first();
         $arrival = Entry::query()->where('title', $prompt2)->with('availableParentEntries.parentEntry')->first();
-        if ($start === null) {
-            $this->info("Ajout du départ en BDD");
-            try {
-                Artisan::call('karinthy:entry-command', [
-                    'url' => urlencode($prompt1),
-                ]);
-                $output = Artisan::output();
-            } catch (\Exception $e) {
-            }
-            if ($output) {
-                $start = Entry::query()->where('title', $prompt1)->with('availableChildEntries')->first();
-            } else {
-                dd('le point de départ est incorrect');
-            }
-        }
-        if ($arrival === null) {
-            $this->info("Ajout de l\'arrivée en BDD");
-            try {
-                Artisan::call('karinthy:entry-command', [
-                    'url' => urlencode($prompt2),
-                ]);
-                $output = Artisan::output();
-            } catch (\Exception $e) {
-            }
-            if (isset($output)) {
-                dd('Arrivée ajouté à la BDD, cependant étant toute fraiche, il est impossible que des pages la référencent déja, merci de reessayer plus tard');
-            } else {
-                dd('le point d\'arrivée est incorrect');
-            }
-        }
-        $this->info("Présence vérifié");
 
         $toPageArrival = $arrival->availableParentEntries->pluck('parent_entry_id')->toArray();
 
@@ -86,19 +54,17 @@ class FindWithTitleCommand2 extends Command
             dd('A 1 niveau il ya ' . $count . ' possibilités');
         }
 
-        $allLinksOnPages1 = $this->depthEntries(2, $toPageArrival, [], $start, $arrival, $dateDebut);
+        $this->depthEntries(2, $start, $arrival, $dateDebut);
 
-        $linksAlreadyProcessed = $toPageArrival;
-        $allLinksOnPages2 = $this->depthEntries(3, $allLinksOnPages1, $linksAlreadyProcessed, $start, $arrival, $dateDebut);
+        $this->depthEntries(3, $start, $arrival, $dateDebut);
 
-        $linksAlreadyProcessed = array_unique(array_merge($allLinksOnPages1, $linksAlreadyProcessed));
-        $allLinksOnPages3 = $this->depthEntries(4, $allLinksOnPages2, $linksAlreadyProcessed, $start, $arrival, $dateDebut);
+        $this->depthEntries(4, $start, $arrival, $dateDebut);
 
 
-        dd('la théorie est-elle fausse ?' . count($toPageArrival) . ' ' . count($allLinksOnPages1));
+        dd('la théorie est-elle fausse ?');
     }
 
-    public function depthEntries($depth, $allLinksOnPrecedentPages, $linksAlreadyProcessed, $start, $arrival, $dateDebut)
+    public function depthEntries($depth, $start, $arrival, $dateDebut)
     {
         $greatParents = $arrival->availableParentEntries;
         $isTrue = false;
@@ -106,9 +72,6 @@ class FindWithTitleCommand2 extends Command
         $count3levels = 0;
         $countPossibilities = 0;
         $greatParent = null;
-        $allLinksOnPages = [];
-
-        $allLinksOnPrecedentPages = array_diff($allLinksOnPrecedentPages, $linksAlreadyProcessed);
 
         foreach ($greatParents as $greatParent) {
             $greatParent = $greatParent->parentEntry;
@@ -207,22 +170,7 @@ class FindWithTitleCommand2 extends Command
             $this->info('A ' . $depth . ' niveau il ya ' . $countPossibilities . ' possibilités ' . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
             dd('ici');
         }
-        foreach ($allLinksOnPrecedentPages as $index => $allLinksOnPrecedentPage) {
 
-            $this->info('traitement du parent ' .  ($index + 1) . '/' . count($allLinksOnPrecedentPages) . ' dans la profondeur ' . $depth . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
-
-            $onPagesSubset = AvailableEntry::query()
-                ->where('child_entry_id', $allLinksOnPrecedentPage)
-                ->pluck('parent_entry_id')
-                ->unique()
-                ->toArray();
-
-            // $this->info(count($onPagesSubset) . '  ' . Carbon::now());
-            $allLinksOnPages = array_merge($allLinksOnPages, $onPagesSubset);
-
-        }
-        $allLinksOnPages = array_unique($allLinksOnPages);
-        $allLinksOnPages = array_diff($allLinksOnPages, $linksAlreadyProcessed);
-        return $allLinksOnPages;
+        return;
     }
 }
