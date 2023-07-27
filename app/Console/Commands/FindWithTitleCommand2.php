@@ -31,8 +31,6 @@ class FindWithTitleCommand2 extends Command
         ini_set('memory_limit', '32768M');
         $prompt1 = str_replace('_', ' ', $this->argument('prompt1'));
         $prompt2 = str_replace('_', ' ', $this->argument('prompt2'));
-        $prompt2 = 'Muwatalli Ier';
-        $prompt1 = 'Années 1450 av. J.-C.';
 
         $this->info("Vérification de la présence en bdd de ces pages ainsi que les liens vers et y menant");
         $start = Entry::query()->where('title', $prompt1)->with('availableChildEntries.childEntry')->first();

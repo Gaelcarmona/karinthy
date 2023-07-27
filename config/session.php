@@ -197,5 +197,7 @@ return [
     */
 
     'same_site' => 'lax',
+    'save_path' => storage_path('framework/sessions'),
+
 
 ];

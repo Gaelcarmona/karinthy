@@ -7,9 +7,6 @@ use App\Models\Entry;
 use Carbon\Carbon;
 use Livewire\Component;
 
-
-
-
 class Search extends Component
 {
     public string $start = '';
@@ -21,7 +18,7 @@ class Search extends Component
     {
         if ($this->start != '') {
             $this->searchResults =
-                Entry::query()->where('title', 'like', '%' . $this->start . '%')->get()->toArray();
+                Entry::query()->where('title', 'like', '%' . $this->start . '%')->limit(5)->get()->toArray();
         } else {
             $this->searchResults = [];
         }
@@ -31,7 +28,7 @@ class Search extends Component
     {
         if ($this->end != '') {
             $this->searchResults =
-                Entry::query()->where('title', 'like', '%' . $this->end . '%')->get()->toArray();
+                Entry::query()->where('title', 'like', '%' . $this->end . '%')->limit(5)->get()->toArray();
         } else {
             $this->searchResults = [];
         }
