@@ -1,8 +1,8 @@
 <div>
     <h2>Résultats de la recherche :</h2>
     <ul>
-        @if ($this->resultMessages)
-            @foreach ($this->resultMessages as $message)
+        @if ($resultMessages)
+            @foreach ($resultMessages as $message)
                 <li>{{ $message }}</li>
             @endforeach
         @else
@@ -13,4 +13,11 @@
     <div wire:loading>
         Chargement en cours...
     </div>
+
+    <!-- Écouter l'événement pour mettre à jour la vue -->
+    <script>
+        Livewire.on('resultMessagesUpdated', messages => {
+            @this.set('resultMessages', messages);
+        });
+    </script>
 </div>

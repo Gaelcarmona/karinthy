@@ -33,7 +33,10 @@ class Results extends Component
         if ($onPagesMinusOne->isNotEmpty()) {
 
             foreach ($onPagesMinusOne as $onPageMinusOne) {
+
                 $this->resultMessages[] = $start->title . '->' . $onPageMinusOne->childEntry->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+                $this->emit('resultMessagesUpdated', $this->resultMessages);
+
             }
             return;
         }
@@ -55,8 +58,11 @@ class Results extends Component
 
             if ($parents->isNotEmpty()) {
                 foreach ($parents as $parent) {
+
                     $parent = $parent->childEntry;
                     $this->resultMessages[] = $start->title . '->' . $parent->title . '->' . $greatParent->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+                    $this->emit('resultMessagesUpdated', $this->resultMessages);
+
                 }
             }
             $parents = $start->availableChildEntries;
@@ -72,8 +78,11 @@ class Results extends Component
     
                     if ($inBetweenParents->isNotEmpty()) {
                         foreach ($inBetweenParents as $inBetweenParent) {
+
                             $inBetweenParent = $inBetweenParent->childEntry;
                             $this->resultMessages[] = $start->title . '->' . $parent->title . '->' . $inBetweenParent->title . '->' . $greatParent->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+                            $this->emit('resultMessagesUpdated', $this->resultMessages);
+
                         }
                     }
                 }
@@ -100,11 +109,18 @@ class Results extends Component
                             $second = $linked->childEntry;
     
                             if ($parents->isNotEmpty()) {
+                                
                                 foreach ($parents as $parent) {
+
                                     $parent = $parent->childEntry;
+
                                     foreach ($parent->availableChildEntries as $availableChildEntry) {
+
                                         if ($availableChildEntry->child_entry_id == $first->id) {
+
                                             $this->resultMessages[] = $start->title . '->' . $parent->title . '->' . $first->title . '->' . $second->title . '->' . $greatParent->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+                                            $this->emit('resultMessagesUpdated', $this->resultMessages);
+
                                         }
                                     }
                                 }
