@@ -10,9 +10,8 @@ use Livewire\Component;
 class Results extends Component
 {
     public $results = [];
-    public ?array $resultMessages = [];
+    public array $resultMessages = [];
     protected $listeners = ['searchSubmitted' => 'showResults'];
-    
 
     public function showResults($start, $end)
     {
@@ -35,14 +34,12 @@ class Results extends Component
             foreach ($onPagesMinusOne as $onPageMinusOne) {
 
                 $this->resultMessages[] = $start->title . '->' . $onPageMinusOne->childEntry->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                $this->emit('resultMessagesUpdated', $this->resultMessages);
-
+            
             }
             return;
         }
 
         $greatParents = $arrival->availableParentEntries;
-        $isTrue = false;
         $greatParent = null;
 
         foreach ($greatParents as $greatParent) {
@@ -61,8 +58,6 @@ class Results extends Component
 
                     $parent = $parent->childEntry;
                     $this->resultMessages[] = $start->title . '->' . $parent->title . '->' . $greatParent->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                    $this->emit('resultMessagesUpdated', $this->resultMessages);
-
                 }
             }
             $parents = $start->availableChildEntries;
@@ -81,8 +76,6 @@ class Results extends Component
 
                             $inBetweenParent = $inBetweenParent->childEntry;
                             $this->resultMessages[] = $start->title . '->' . $parent->title . '->' . $inBetweenParent->title . '->' . $greatParent->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                            $this->emit('resultMessagesUpdated', $this->resultMessages);
-
                         }
                     }
                 }
@@ -119,8 +112,7 @@ class Results extends Component
                                         if ($availableChildEntry->child_entry_id == $first->id) {
 
                                             $this->resultMessages[] = $start->title . '->' . $parent->title . '->' . $first->title . '->' . $second->title . '->' . $greatParent->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                                            $this->emit('resultMessagesUpdated', $this->resultMessages);
-
+                                        
                                         }
                                     }
                                 }
@@ -128,6 +120,12 @@ class Results extends Component
                         }
                     }
                 }
+            }
+            if (empty($this->resultMessages)) {
+                //TODO:5ème degré de séparation
+            }
+            if (empty($this->resultMessages)) {
+                $this->resultMessages[] = "La théorie est fausse ?";
             }
         }
     }

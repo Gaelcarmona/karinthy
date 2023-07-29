@@ -16,8 +16,8 @@
         }
     }'
     >
-    <div style="text-align: center">
-        <input type="text" list="startOptions" wire:model="start" class="fancy-tailwind-things" x-ref="startInput"
+    <div class="text-center">
+        <input type="text" list="startOptions" wire:model="start" class="rounded" x-ref="startInput"
             x-on:change.debounce="startSelected($event)">
 
         <datalist id="startOptions">
@@ -27,7 +27,7 @@
             @endforeach
         </datalist>
 
-        <input type="text" list="endOptions" wire:model="end" class="fancy-tailwind-things" x-ref="endInput"
+        <input type="text" list="endOptions" wire:model="end" class="rounded" x-ref="endInput"
             x-on:change.debounce="endSelected($event)">
 
         <datalist id="endOptions">
@@ -36,7 +36,7 @@
                 </option>
             @endforeach
         </datalist>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button type="submit" class="text-white font-bold py-2 px-4 rounded" style="background-color: #03a696">
             Rechercher
         </button>
     </div>

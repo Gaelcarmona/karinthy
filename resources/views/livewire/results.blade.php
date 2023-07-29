@@ -1,6 +1,6 @@
-<div>
+<div class="text-center">
     <h2>Résultats de la recherche :</h2>
-    <ul>
+    <ul style="list-style-type: none;">
         @if ($resultMessages)
             @foreach ($resultMessages as $message)
                 <li>{{ $message }}</li>
@@ -14,7 +14,6 @@
         Chargement en cours...
     </div>
 
-    <!-- Écouter l'événement pour mettre à jour la vue -->
     <script>
         Livewire.on('resultMessagesUpdated', messages => {
             @this.set('resultMessages', messages);
