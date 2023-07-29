@@ -63,23 +63,25 @@ class InsertEntryApiCommand extends Command
     public function StoreLinksOnPage($links, $parentEntry)
     {
         foreach ($links as $link) {
-            $childEntryTitle = $link['title'];
-            $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
-
-            $childEntry = Entry::query()
-                ->where('url', $childEntryUrl)
-                ->firstOrCreate([
-                    'url' => $childEntryUrl,
-                    'title' => $childEntryTitle,
-                ]);
-            if ($parentEntry->id !== $childEntry->id) {
-                AvailableEntry::query()
-                    ->where('parent_entry_id', $parentEntry->id)
-                    ->where('child_entry_id', $childEntry->id)
+            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Catégorie:Accueil|Référence:)', $link['title'])) {
+                $childEntryTitle = $link['title'];
+                $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
+    
+                $childEntry = Entry::query()
+                    ->where('url', $childEntryUrl)
                     ->firstOrCreate([
-                        'parent_entry_id' => $parentEntry->id,
-                        'child_entry_id' => $childEntry->id,
+                        'url' => $childEntryUrl,
+                        'title' => $childEntryTitle,
                     ]);
+                if ($parentEntry->id !== $childEntry->id) {
+                    AvailableEntry::query()
+                        ->where('parent_entry_id', $parentEntry->id)
+                        ->where('child_entry_id', $childEntry->id)
+                        ->firstOrCreate([
+                            'parent_entry_id' => $parentEntry->id,
+                            'child_entry_id' => $childEntry->id,
+                        ]);
+                }
             }
         }
     }

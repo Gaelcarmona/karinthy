@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 766)->nullable(false);
+            $table->string('title', 766)->nullable(false)->index();
             $table->string('url', 766)->nullable(false)->unique();
             $table->boolean('toDelete')->nullable();
             $table->timestamps();
