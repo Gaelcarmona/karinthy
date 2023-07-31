@@ -51,7 +51,7 @@ class InsertEntriesApiCommand extends Command
             $client = new Client();
             try {
                 $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . count($entries) . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
-                if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article)', $entry->title)) {
+                if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $entry->title)) {
                     $this->info('Suppression avant ouverture: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
                     $entry->toDelete = 1;
                     $entry->save();
@@ -154,7 +154,7 @@ class InsertEntriesApiCommand extends Command
     public function StoreLinksOnPage($links, $parentEntry)
     {
         foreach ($links as $link) {
-            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article)', $link['title'])) {
+            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $link['title'])) {
                 $childEntryTitle = $link['title'];
                 $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
     

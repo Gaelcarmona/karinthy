@@ -44,7 +44,7 @@ class ChildEntriesCommand extends Command
         $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         
         foreach ($entries as $entry) {
-            if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article)', $entry->title)) {
+            if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $entry->title)) {
                 $this->info('Suppression avant ouverture: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
                 $entry->toDelete = 1;
                 $entry->save();
@@ -64,7 +64,7 @@ class ChildEntriesCommand extends Command
 
                     $links = array_filter($links, function ($link) {
                         return (str_starts_with($link, '/wiki/')
-                            && !preg_match('(Sp%C3%A9cial:|Aide:|Fichier:|Discussion:|Wikip%C3%A9dia:|Portail:Accueil|Mod%C3%A8le:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Cat%C3%A9gorie:Accueil|MediaWiki:|R%C3%A9f%C3%A9rence:|Utilisatrice:|Module:|Discussion_mod%C3%A8le:|Cat%C3%A9gorie:Article)', $link)
+                            && !preg_match('(Sp%C3%A9cial:|Aide:|Fichier:|Discussion:|Wikip%C3%A9dia:|Portail:Accueil|Mod%C3%A8le:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Cat%C3%A9gorie:Accueil|MediaWiki:|R%C3%A9f%C3%A9rence:|Utilisatrice:|Module:|Discussion_mod%C3%A8le:|Cat%C3%A9gorie:Article|Discussion_Portail)', $link)
                         );
                     });
                     $links = array_unique($links);
@@ -98,9 +98,12 @@ class ChildEntriesCommand extends Command
                     $this->info('La page suivante est traité: ' . $entry->title . ', restant ' . $countEntries . '/' . count($entries) . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids entre" . $idStart . ' et ' . $idEnd);
                 } else {
                     $this->error('Erreur lors de l\'accès à la page ' . $entry->url . ' - Code de statut : ' . $statusCode . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
+                    $countEntries--;
                     continue;
                 }
             } catch (\Exception $e) {
+                $entry->toDelete = 1;
+                $entry->save();
                 $this->error('Erreur lors de l\'accès à la page ' . $entry->url . ' - ' . $e->getMessage());
                 continue;
             }

@@ -29,8 +29,6 @@ class SetToDeleteCommand extends Command
     {
 
         $dateDebut = Carbon::now();
-        $idStart = $this->argument('idStart');
-        $idEnd = $this->argument('idEnd');
         $entries = Entry::query()
         ->where('title', 'like', '%' .'Catégorie:Article:' . '%')
         ->orWhere('title', 'like', '%' .'Discussion modèle:' . '%')
@@ -50,8 +48,8 @@ class SetToDeleteCommand extends Command
         ->orWhere('title', 'like', '%' .'Discussion:' . '%')
         ->orWhere('title', 'like', '%' .'Fichier:' . '%')
         ->orWhere('title', 'like', '%' .'Aide:' . '%')
-        ->pluck('title')
-        ->toArray();
+        ->orWhere('title', 'like', '%' .'Discussion Portail' . '%')
+        ->get();
 
         $countEntries = count($entries);
         $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
