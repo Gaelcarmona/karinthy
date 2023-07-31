@@ -42,6 +42,7 @@ class InsertEntriesApiCommand extends Command
         $this->info('récupération des pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         $entries = Entry::doesntHave('availableChildEntries')
             ->whereBetween('id', [$idStart, $idEnd])
+            ->where('toDelete', '=', null)
             ->get();
         $countEntries = count($entries);
         $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
@@ -50,6 +51,13 @@ class InsertEntriesApiCommand extends Command
             $client = new Client();
             try {
                 $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . count($entries) . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article)', $entry->title)) {
+                    $this->info('Suppression avant ouverture: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                    $entry->toDelete = 1;
+                    $entry->save();
+                    $countEntries--;
+                    continue;
+                }
 
                 $url = "https://fr.wikipedia.org/w/api.php?action=query&titles={$entry->url}&prop=links&redirects&format=json&formatversion=2&pllimit=max";
 
@@ -78,7 +86,7 @@ class InsertEntriesApiCommand extends Command
                         $parentEntryTitle = $data['query']['redirects']['0']['to'];
                         $parentEntryUrl = urlencode(str_replace(' ', '_', $parentEntryTitle));
                         $newEntry = Entry::query()
-                            ->where('url', $parentEntryUrl)
+                            ->where('title', $parentEntryTitle)
                             ->firstOrCreate([
                                 'url' => $parentEntryUrl,
                                 'title' => $parentEntryTitle,
@@ -146,17 +154,17 @@ class InsertEntriesApiCommand extends Command
     public function StoreLinksOnPage($links, $parentEntry)
     {
         foreach ($links as $link) {
-            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Catégorie:Accueil|Référence:)', $link['title'])) {
+            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article)', $link['title'])) {
                 $childEntryTitle = $link['title'];
                 $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
     
                 $childEntry = Entry::query()
-                    ->where('url', $childEntryUrl)
+                    ->where('title', $childEntryTitle)
                     ->firstOrCreate([
                         'url' => $childEntryUrl,
                         'title' => $childEntryTitle,
                     ]);
-                if ($parentEntry->id !== $childEntry->id) {
+                if (($parentEntry->id !== $childEntry->id) && ($parentEntry->title !== $childEntryTitle)) {
                     AvailableEntry::query()
                         ->where('parent_entry_id', $parentEntry->id)
                         ->where('child_entry_id', $childEntry->id)

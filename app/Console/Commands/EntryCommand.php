@@ -44,7 +44,7 @@ class EntryCommand extends Command
                 $links = $crawler->filter('a')->extract(['href']);
                 $links = array_filter($links, function ($link) {
                     return (str_starts_with($link, '/wiki/')
-                        && !preg_match('(Sp%C3%A9cial:|Aide:|Fichier:|Discussion:|Wikip%C3%A9dia:|Portail:Accueil|Mod%C3%A8le:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Cat%C3%A9gorie:Accueil)', $link)
+                        && !preg_match('(Sp%C3%A9cial:|Aide:|Fichier:|Discussion:|Wikip%C3%A9dia:|Wikip%C3%A9dia:|Portail:Accueil|Mod%C3%A8le:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Cat%C3%A9gorie:Accueil|MediaWiki:|R%C3%A9f%C3%A9rence:)', $link)
                     );
                 });
                 $links = array_unique($links);
@@ -56,7 +56,6 @@ class EntryCommand extends Command
                         'url' => $url,
                         'title' => $title,
                     ]);
-
 
                 foreach ($links as $link) {
 

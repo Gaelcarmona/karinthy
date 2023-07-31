@@ -63,7 +63,7 @@ class InsertEntryApiCommand extends Command
     public function StoreLinksOnPage($links, $parentEntry)
     {
         foreach ($links as $link) {
-            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Catégorie:Accueil|Référence:)', $link['title'])) {
+            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article)', $link['title'])) {
                 $childEntryTitle = $link['title'];
                 $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
     

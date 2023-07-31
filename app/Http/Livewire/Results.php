@@ -122,7 +122,7 @@ class Results extends Component
                 }
             }
             if (empty($this->resultMessages)) {
-                //TODO:5ème degré de séparation
+                //TODO:6ème degré de séparation
             }
             if (empty($this->resultMessages)) {
                 $this->resultMessages[] = "La théorie est fausse ?";

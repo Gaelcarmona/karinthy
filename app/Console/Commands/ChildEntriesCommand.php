@@ -38,11 +38,19 @@ class ChildEntriesCommand extends Command
         $this->info('récupération des pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         $entries = Entry::doesntHave('availableChildEntries')
             ->whereBetween('id', [$idStart, $idEnd])
+            ->where('toDelete', '=', null)
             ->get();
         $countEntries = count($entries);
         $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         
         foreach ($entries as $entry) {
+            if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article)', $entry->title)) {
+                $this->info('Suppression avant ouverture: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                $entry->toDelete = 1;
+                $entry->save();
+                $countEntries--;
+                continue;
+            }
             $client = new Client();
             try {
                 $response = $client->get('https://fr.wikipedia.org/wiki/' . $entry->url);
@@ -56,7 +64,7 @@ class ChildEntriesCommand extends Command
 
                     $links = array_filter($links, function ($link) {
                         return (str_starts_with($link, '/wiki/')
-                            && !preg_match('(Sp%C3%A9cial:|Aide:|Fichier:|Discussion:|Wikip%C3%A9dia:|Portail:Accueil|Mod%C3%A8le:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Cat%C3%A9gorie:Accueil)', $link)
+                            && !preg_match('(Sp%C3%A9cial:|Aide:|Fichier:|Discussion:|Wikip%C3%A9dia:|Portail:Accueil|Mod%C3%A8le:|Utilisateur:|Discussion_utilisateur:|Projet:|Discussion_Projet:|501c|Cat%C3%A9gorie:Accueil|MediaWiki:|R%C3%A9f%C3%A9rence:|Utilisatrice:|Module:|Discussion_mod%C3%A8le:|Cat%C3%A9gorie:Article)', $link)
                         );
                     });
                     $links = array_unique($links);
@@ -70,14 +78,14 @@ class ChildEntriesCommand extends Command
                         $title = str_replace('_', ' ', urldecode($link));
 
                         $linkEntry = Entry::query()
-                            ->where('url', $link)
+                            ->where('title', $title)
                             ->firstOrCreate([
                                 'url' => $link,
                                 'title' => $title,
                             ]);
 
-                        if ($entry->id !== $linkEntry->id) {
-                            $availableInEntry = AvailableEntry::query()
+                        if (($entry->id !== $linkEntry->id) && ($title !== $entry->title)) {
+                            AvailableEntry::query()
                                 ->where('parent_entry_id', $entry->id)
                                 ->where('child_entry_id', $linkEntry->id)
                                 ->firstOrCreate([
