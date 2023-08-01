@@ -7,7 +7,7 @@ use App\Models\Entry;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class EntryCommand extends Command
+class DeleteCommand extends Command
 {
     /**
      * The name and signature of the console command.
