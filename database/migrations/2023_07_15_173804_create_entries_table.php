@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('title', 766)->nullable(false)->index();
             $table->string('url', 766)->nullable(false)->unique();
-            $table->boolean('toDelete')->nullable();
+            $table->boolean('not_a_page')->nullable();
+            $table->integer('redirect_to')->nullable();
+            $table->json('paths')->nullable();
             $table->timestamps();
         });
     }

@@ -54,7 +54,7 @@ class SetToDeleteCommand extends Command
         $countEntries = count($entries);
         $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         foreach ($entries as $entry) {
-            $entry->toDelete = 1;
+            $entry->not_a_page = 1;
             $entry->save();
         }
         $this->info('Fin     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));

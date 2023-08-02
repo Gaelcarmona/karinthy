@@ -23,7 +23,7 @@ class Entry extends Model
     }
 
     public function availableEntry()
-{
-    return $this->hasOne(AvailableEntry::class, 'parent_entry_id');
-}
+    {
+        return $this->hasOne(AvailableEntry::class, 'parent_entry_id');
+    }
 }

@@ -42,18 +42,18 @@ class InsertEntriesApiCommand extends Command
         $this->info('récupération des pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         $entries = Entry::doesntHave('availableChildEntries')
             ->whereBetween('id', [$idStart, $idEnd])
-            ->where('toDelete', '=', null)
+            ->where('not_a_page', '=', null)
             ->get();
         $countEntries = count($entries);
         $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
-
+        $staticCountEntries = $countEntries;
         foreach ($entries as $entry) {
             $client = new Client();
             try {
-                $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . count($entries) . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . $staticCountEntries . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
                 if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $entry->title)) {
                     $this->info('Suppression avant ouverture: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
-                    $entry->toDelete = 1;
+                    $entry->not_a_page = 1;
                     $entry->save();
                     $countEntries--;
                     continue;
@@ -71,7 +71,7 @@ class InsertEntriesApiCommand extends Command
                     if (isset($data['query']['pages']['0']['missing'])) {
 
                         $this->info('Suppression: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
-                        $entry->toDelete = 1;
+                        $entry->not_a_page = 1;
                         $entry->save();
                         $countEntries--;
                         continue;
@@ -92,12 +92,7 @@ class InsertEntriesApiCommand extends Command
                                 'title' => $parentEntryTitle,
                             ]);
 
-                        Redirect::firstOrCreate([
-                            'title' => $entry->title,
-                            'url' => $entry->url,
-                            'redirect_to_entry_id' => $newEntry->id,
-                        ]);
-                        $entry->toDelete = 1;
+                        $entry->redirect_to = $newEntry->id;
                         $entry->save();
                         $entry = $newEntry;
 
@@ -109,6 +104,7 @@ class InsertEntriesApiCommand extends Command
                                     'parent_entry_id' => $availableParentEntry->parent_entry_id,
                                     'child_entry_id' => $entry->id,
                                 ]);
+                            $availableParentEntry->delete();
                         }
                         if ($entry->has('availableChildEntries')) {
                             $countEntries--;
@@ -157,7 +153,7 @@ class InsertEntriesApiCommand extends Command
             if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $link['title'])) {
                 $childEntryTitle = $link['title'];
                 $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
-    
+
                 $childEntry = Entry::query()
                     ->where('title', $childEntryTitle)
                     ->firstOrCreate([

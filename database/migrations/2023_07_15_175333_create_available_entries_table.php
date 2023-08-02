@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('available_entries', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('parent_entry_id')
                 ->references('id')
                 ->on('entries')
