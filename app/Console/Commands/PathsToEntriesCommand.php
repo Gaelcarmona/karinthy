@@ -32,17 +32,23 @@ class PathsToEntriesCommand extends Command
         $dateDebut = Carbon::now();
         $idStart = $this->argument('idStart');
         $idEnd = $this->argument('idEnd');
-        $entries = Entry::query()
+
+        $countEntries = Entry::query()
             ->whereBetween('id', [$idStart, $idEnd])
             ->where('paths', '=', null)
-            ->get();
+            ->count();
 
-        $countEntries = count($entries);
-        foreach ($entries as $index => $entry) {
-            $this->info('Traitement: ' . $entry->title . ', traité : ' . ($index + 1) . '/' . $countEntries . ' ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
-            $availableChildEntries = $entry->load('availableChildEntries')->availableChildEntries;
-            $entryPaths = []; // Initialize the paths array for this entry
-            foreach ($availableChildEntries as $availableChildEntry) {
+        for ($i = 0; $i < 1000000; $i++) {
+            $entry = Entry::query()
+                ->whereBetween('id', [$idStart, $idEnd])
+                ->where('paths', '=', null)
+                ->with('availableChildEntries')
+                ->first();
+            if ($entry == null) {
+                return;
+            }
+            $this->info('Traitement: ' . $entry->title . ', traité : ' . $i . '/' . $countEntries . '  ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+            foreach ($entry->availableChildEntries as $availableChildEntry) {
                 $entryPaths[] = $availableChildEntry->child_entry_id;
                 $entry->paths = json_encode($entryPaths);
                 $entry->save();

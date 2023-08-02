@@ -41,22 +41,8 @@ class DeleteCommand extends Command
         $totalEntries = count($entries);
 
         foreach ($entries as $key => $entry) {
-
-            // $availableChildEntries = $entry->load('availableChildEntries')->availableChildEntries;
-            // if (empty($availableChildEntries)) {
-            //     foreach ($availableChildEntries as $availableChildEntry) {
-            //         $availableChildEntry->delete();
-            //     }
-            // }
-            // $availableParentEntries = $entry->load('availableParentEntries')->availableParentEntries;
-            // if (empty($availableChildEntries)) {
-            //     foreach ($availableParentEntries as $availableParentEntry) {
-            //         $availableParentEntry->delete();
-            //     }
-            // }
             $entry->delete();
-
-            $this->info(($key + 1) . '/' . count($entries) . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
+            $this->info(($key + 1) . '/' . $totalEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         }
     }
 }
