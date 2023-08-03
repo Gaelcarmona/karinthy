@@ -39,7 +39,7 @@ class PathsToEntriesCommand extends Command
             ->count();
 
         for ($i = 0; $i < 1000000; $i++) {
-            $entry = Entry::query()
+            $entry = Entry::has('availableChildEntries')
                 ->whereBetween('id', [$idStart, $idEnd])
                 ->where('paths', '=', null)
                 ->with('availableChildEntries')
@@ -53,6 +53,7 @@ class PathsToEntriesCommand extends Command
                 $entry->paths = json_encode($entryPaths);
                 $entry->save();
             }
+                unset($entryPaths);
         }
     }
 }
