@@ -57,6 +57,8 @@ class InsertEntryApiCommand extends Command
                 $this->StoreLinksOnPage($data['query']['pages']['0']['links'], $parentEntry);
             }
         } while (isset($data['continue']['plcontinue']));
+        $parentEntry->treated_at = Carbon::now();
+        $parentEntry->save();
         $this->info('traitement de la page ' . $parentEntry->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
     }
 
@@ -66,7 +68,7 @@ class InsertEntryApiCommand extends Command
             if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $link['title'])) {
                 $childEntryTitle = $link['title'];
                 $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
-    
+
                 $childEntry = Entry::query()
                     ->where('url', $childEntryUrl)
                     ->firstOrCreate([

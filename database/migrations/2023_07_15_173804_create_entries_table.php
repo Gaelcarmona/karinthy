@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
             $table->string('title', 766)->nullable(false)->index();
-            $table->string('url', 766)->nullable(false)->unique();
+            $table->string('url', 766)->nullable(false);
             $table->boolean('not_a_page')->nullable();
             $table->integer('redirect_to')->nullable();
             $table->json('paths')->nullable();
+            $table->dateTime('treated_at')->nullable();
             $table->timestamps();
         });
     }

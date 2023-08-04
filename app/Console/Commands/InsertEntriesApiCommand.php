@@ -12,7 +12,6 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
 
-
 class InsertEntriesApiCommand extends Command
 {
     /**
@@ -39,21 +38,22 @@ class InsertEntriesApiCommand extends Command
         $idStart = $this->argument('idStart');
         $idEnd = $this->argument('idEnd');
 
-        $this->info('récupération des pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
-        $entries = Entry::doesntHave('availableChildEntries')
+        $this->info('récupération des pages à traiter     ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
+        $entries = Entry::query()
             ->whereBetween('id', [$idStart, $idEnd])
-            ->where('not_a_page', '=', null)
+            ->where('treated_at', '=', null)
             ->get();
         $countEntries = count($entries);
-        $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
+        $this->info($countEntries . ' pages à traiter     ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         $staticCountEntries = $countEntries;
         foreach ($entries as $entry) {
             $client = new Client();
             try {
-                $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . $staticCountEntries . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . $staticCountEntries . ' ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
                 if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $entry->title)) {
-                    $this->info('Suppression avant ouverture: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                    $this->info('Suppression avant ouverture: ' . $entry->title . ' ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
                     $entry->not_a_page = 1;
+                    $entry->treated_at = Carbon::now();
                     $entry->save();
                     $countEntries--;
                     continue;
@@ -70,8 +70,9 @@ class InsertEntriesApiCommand extends Command
 
                     if (isset($data['query']['pages']['0']['missing'])) {
 
-                        $this->info('Suppression: ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                        $this->info('Suppression: ' . $entry->title . ' ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
                         $entry->not_a_page = 1;
+                        $entry->treated_at = Carbon::now();
                         $entry->save();
                         $countEntries--;
                         continue;
@@ -79,7 +80,7 @@ class InsertEntriesApiCommand extends Command
 
                     if (isset($data['query']['redirects']['0']['to'])) {
 
-                        $this->info('Redirection vers : ' . $data['query']['redirects']['0']['to'] . ', suppression de ' . $entry->title  . ' ' .  $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
+                        $this->info('Redirection vers : ' . $data['query']['redirects']['0']['to'] . ', suppression de ' . $entry->title . ' ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
 
                         $availableParentEntries = $entry->load('availableParentEntries')->availableParentEntries;
 
@@ -93,6 +94,7 @@ class InsertEntriesApiCommand extends Command
                             ]);
 
                         $entry->redirect_to = $newEntry->id;
+                        $entry->treated_at = Carbon::now();
                         $entry->save();
                         $entry = $newEntry;
 
@@ -106,7 +108,7 @@ class InsertEntriesApiCommand extends Command
                                 ]);
                             $availableParentEntry->delete();
                         }
-                        if ($entry->has('availableChildEntries')) {
+                        if ($entry->treated_at != null) {
                             $countEntries--;
                             continue;
                         }
@@ -132,7 +134,8 @@ class InsertEntriesApiCommand extends Command
                             }
                         }
                     } while (isset($data['continue']['plcontinue']));
-
+                    $entry->treated_at = Carbon::now();
+                    $entry->save();
                     $countEntries--;
                 } else {
                     $countEntries--;
@@ -140,6 +143,7 @@ class InsertEntriesApiCommand extends Command
                     continue;
                 }
             } catch (\Exception $e) {
+                $countEntries--;
                 $this->error('Erreur lors de l\'accès à la page ' . $entry->url . ' - ' . $e->getMessage());
                 Log::error([$entry->id, $e->getMessage()]);
                 continue;
