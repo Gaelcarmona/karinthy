@@ -35,13 +35,19 @@ class PathsToEntriesCommand extends Command
 
         $countEntries = Entry::query()
             ->whereBetween('id', [$idStart, $idEnd])
+            ->where('treated_at', '!=', null)
             ->where('paths', '=', null)
+            ->where('redirect_to', '=', null)
+            ->where('not_a_page', '=', null)
             ->count();
 
         for ($i = 0; $i < 1000000; $i++) {
             $entry = Entry::has('availableChildEntries')
                 ->whereBetween('id', [$idStart, $idEnd])
+                ->where('treated_at', '!=', null)
                 ->where('paths', '=', null)
+                ->where('redirect_to', '=', null)
+                ->where('not_a_page', '=', null)
                 ->with('availableChildEntries')
                 ->first();
             if ($entry == null) {
@@ -53,7 +59,7 @@ class PathsToEntriesCommand extends Command
                 $entry->paths = json_encode($entryPaths);
                 $entry->save();
             }
-                unset($entryPaths);
+            unset($entryPaths);
         }
     }
 }
