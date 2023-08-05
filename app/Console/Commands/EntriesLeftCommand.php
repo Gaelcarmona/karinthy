@@ -32,11 +32,10 @@ class EntriesLeftCommand extends Command
         $idEnd = $this->argument('idEnd');
 
         $this->info('récupération des pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
-        $entries = Entry::doesntHave('availableChildEntries')
+        $countEntries = Entry::query()
             ->whereBetween('id', [$idStart, $idEnd])
-            ->where('toDelete', '=', null)
-            ->get();
-        $countEntries = count($entries);
+            ->where('treated_at', '=', null)
+            ->count();
         $this->info($countEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
     }
 }
