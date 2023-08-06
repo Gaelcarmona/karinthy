@@ -35,13 +35,16 @@ class DeleteCommand extends Command
         $idEnd = $this->argument('idEnd');
         $entries = Entry::query()
             ->whereBetween('id', [$idStart, $idEnd])
-            ->where('toDelete', '=', 1)
+            ->where('redirect_to', '!=', null)
+            ->with('availableParentEntries')
             ->get();
 
         $totalEntries = count($entries);
 
         foreach ($entries as $key => $entry) {
-            $entry->delete();
+           foreach ($entry->availableParentEntries as $availableParentEntry ) {
+            $availableParentEntry->delete();
+           }
             $this->info(($key + 1) . '/' . $totalEntries . ' pages à traiter     ' .  $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
         }
     }
