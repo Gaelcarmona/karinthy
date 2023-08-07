@@ -41,7 +41,7 @@ class PathsToEntriesCommand extends Command
             ->where('not_a_page', '=', null)
             ->count();
 
-        for ($i = 0; $i < 1000000; $i++) {
+        for ($i = 0; $i < $countEntries; $i++) {
             $entry = Entry::has('availableChildEntries')
                 ->whereBetween('id', [$idStart, $idEnd])
                 ->where('treated_at', '!=', null)
