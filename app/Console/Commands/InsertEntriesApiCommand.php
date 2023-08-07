@@ -50,7 +50,7 @@ class InsertEntriesApiCommand extends Command
             $client = new Client();
             try {
                 $this->info('Traitement: ' . $entry->title . ', restant ' . $countEntries . '/' . $staticCountEntries . ' ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
-                if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $entry->title)) {
+                if (preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail|Discussion utilisatrice:)', $entry->title)) {
                     $this->info('Suppression avant ouverture: ' . $entry->title . ' ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
                     $entry->not_a_page = 1;
                     $entry->treated_at = Carbon::now();
@@ -154,7 +154,7 @@ class InsertEntriesApiCommand extends Command
     public function StoreLinksOnPage($links, $parentEntry)
     {
         foreach ($links as $link) {
-            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail)', $link['title'])) {
+            if (!preg_match('(Spécial:|Aide:|Fichier:|Discussion:|Wikipédia:|Portail:Accueil|Modèle:|Utilisateur:|Projet:|501c|Catégorie:Accueil|Référence:|MediaWiki:|Discussion utilisateur:|Discussion Projet:|Utilisatrice:|Module:|Discussion modèle:|Catégorie:Article|Discussion Portail|Discussion utilisatrice:)', $link['title'])) {
                 $childEntryTitle = $link['title'];
                 $childEntryUrl = urlencode(str_replace(' ', '_', $childEntryTitle));
 
