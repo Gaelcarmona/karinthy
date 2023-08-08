@@ -49,6 +49,7 @@ class SetToDeleteCommand extends Command
         ->orWhere('title', 'like', '%' .'Fichier:' . '%')
         ->orWhere('title', 'like', '%' .'Aide:' . '%')
         ->orWhere('title', 'like', '%' .'Discussion Portail' . '%')
+        ->orWhere('title', 'like', '%' .'Discussion utilisatrice' . '%')
         ->get();
 
         $countEntries = count($entries);

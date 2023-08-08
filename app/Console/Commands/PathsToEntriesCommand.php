@@ -53,10 +53,9 @@ class PathsToEntriesCommand extends Command
             if ($entry == null) {
                 return;
             }
+
             $this->info('Traitement: ' . $entry->title . ', traité : ' . $i . '/' . $countEntries . '  ' . $dateDebut->diff(Carbon::now())->format('%hH%imin%ssec') . " ids: " . $idStart . ' à ' . $idEnd);
-            foreach ($entry->availableChildEntries as $availableChildEntry) {
-                $entryPaths[] = $availableChildEntry->child_entry_id;
-            }
+            $entryPaths[] = $entry->availableChildEntries->pluck('child_entry_id');
             $entry->paths = json_encode($entryPaths);
             $entry->save();
             unset($entryPaths);

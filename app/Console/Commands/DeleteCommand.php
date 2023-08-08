@@ -33,20 +33,36 @@ class DeleteCommand extends Command
         $dateDebut = Carbon::now();
         $idStart = $this->argument('idStart');
         $idEnd = $this->argument('idEnd');
-        $entries = Entry::query()
+        $entries = Entry::has('availableParentEntries')
             ->whereBetween('id', [$idStart, $idEnd])
             ->where('redirect_to', '!=', null)
-            ->with('availableParentEntries')
             ->get();
 
         $totalEntries = count($entries);
 
         foreach ($entries as $key => $entry) {
+            $entry->load('availableParentEntries');
             if ($entry->availableParentEntries != null) {
                 foreach ($entry->availableParentEntries as $availableParentEntry) {
                     $availableParentEntry->delete();
                 }
-                $this->info(($key + 1) . '/' . $totalEntries . ' pages à traiter     ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
+                $this->info(($key + 1) . '/' . $totalEntries . ' pages redirect_to à traiter     ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
+            }
+        }
+        $entries = Entry::has('availableParentEntries')
+            ->whereBetween('id', [$idStart, $idEnd])
+            ->where('not_a_page', '!=', null)
+            ->get();
+
+        $totalEntries = count($entries);
+
+        foreach ($entries as $key => $entry) {
+            $entry->load('availableParentEntries');
+            if ($entry->availableParentEntries != null) {
+                foreach ($entry->availableParentEntries as $availableParentEntry) {
+                    $availableParentEntry->delete();
+                }
+                $this->info(($key + 1) . '/' . $totalEntries . ' pages not_a_page à traiter     ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes'));
             }
         }
     }
