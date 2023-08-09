@@ -21,7 +21,7 @@
         <livewire:results />
     </main>
     <footer class='footer mt-auto text-white py-4'style="background-color:#012e40">
-        <p class='mx-auto text-center'>Juillet 2023 - <a target="blank" class="text-white" href="https://www.gaelcarmona.com">Gaël Carmona</a> </p>
+        <p class='mx-auto text-center'>Juillet 2023 - <a target="blank" class="text-white" href="https://www.gaelcarmona.com" target="_blank">Gaël Carmona</a> </p>
     </footer>
     @livewireScripts
 </body>
