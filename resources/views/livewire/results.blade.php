@@ -13,10 +13,4 @@
     <div wire:loading>
         Chargement en cours...
     </div>
-
-    <script>
-        Livewire.on('resultMessagesUpdated', messages => {
-            @this.set('resultMessages', messages);
-        });
-    </script>
 </div>

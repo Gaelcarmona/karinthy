@@ -2,9 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\AvailableEntry;
 use App\Models\Entry;
-use Carbon\Carbon;
 use Livewire\Component;
 
 class Search extends Component
@@ -19,7 +17,12 @@ class Search extends Component
     {
         if ($this->start != '') {
             $this->searchResults =
-                Entry::query()->where('title', 'like', '%' . $this->start . '%')->limit(5)->get()->toArray();
+                Entry::query()
+                ->where('paths', '!=', null)
+                ->where('title', 'like', '%' . $this->start . '%')
+                ->limit(10)
+                ->pluck('title')
+                ->toArray();
         } else {
             $this->searchResults = [];
         }
@@ -27,9 +30,14 @@ class Search extends Component
 
     public function updatedEnd()
     {
-        if ($this->end != '') {
+        if ($this->end != '') { 
             $this->searchResults =
-                Entry::query()->where('title', 'like', '%' . $this->end . '%')->limit(5)->get()->toArray();
+                Entry::query()
+                ->where('paths', '!=', null)
+                ->where('title', 'like', '%' . $this->end . '%')
+                ->limit(10)
+                ->pluck('title')
+                ->toArray();
         } else {
             $this->searchResults = [];
         }
