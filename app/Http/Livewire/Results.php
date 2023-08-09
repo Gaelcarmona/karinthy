@@ -25,6 +25,14 @@ class Results extends Component
         ->where('title', $end)
         ->where('paths', '!=', null)
         ->first();
+        if ($start === null) {
+            $this->resultMessages[] = 'Page de départ inconnue ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+            return;        
+        }
+        if ($arrival === null) {
+            $this->resultMessages[] = 'Page d\'arrivée inconnue ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+            return;        
+        }
         //Ier niveau de séparation
         if (json_decode($start->paths) != null) {
             if (in_array($arrival->id, json_decode($start->paths))) {
