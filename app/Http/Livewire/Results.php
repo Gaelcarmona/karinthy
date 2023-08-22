@@ -26,11 +26,11 @@ class Results extends Component
         ->first();
         if ($start === null) {
             $this->resultMessages[] = 'Page de départ inconnue ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-            return;        
+            return;
         }
         if ($arrival === null) {
             $this->resultMessages[] = 'Page d\'arrivée inconnue ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-            return;        
+            return;
         }
         //Ier niveau de séparation
         if (json_decode($start->paths) != null) {
@@ -40,79 +40,114 @@ class Results extends Component
             }
         }
 
-        $childs = Entry::query()->whereIn('id', json_decode($start->paths))->get();
+        //-------------------------------------------------------------------------------------------------------------------------------------
+
+        $childs_from_start = Entry::query()->whereIn('id', json_decode($start->paths))->get();
         //IInd niveau de séparation
-        foreach ($childs as $child) {
+        foreach ($childs_from_start as $child) {
+            if (json_decode($child->paths) != null) {
+
                 if (in_array($arrival->id, json_decode($child->paths))) {
                     $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
                     return;
                 }
+            }
         }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------
+
+
         // if (!empty($this->resultMessages)) {
         //     return;
         // }
         //IIIème niveau de séparation
-        foreach ($childs as $child) {
+        foreach ($childs_from_start as $child) {
+            if (json_decode($child->paths) != null) {
                 $greatChilds = Entry::query()->whereIn('id', json_decode($child->paths))->get();
                 foreach ($greatChilds as $greatChild) {
+                    if (json_decode($greatChild->paths) != null) {
                         if (in_array($arrival->id, json_decode($greatChild->paths))) {
                             $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                            // return;
+//                            return;
                         }
+                    }
                 }
+            }
         }
-        if (!empty($this->resultMessages)) {
-            return;
-        }
+         if (!empty($this->resultMessages)) {
+             return;
+         }
         //IVème niveau de séparation
-        foreach ($childs as $child) {
+        foreach ($childs_from_start as $child) {
+            if (json_decode($child->paths) != null) {
                 $greatChilds = Entry::query()->whereIn('id', json_decode($child->paths))->get();
                 foreach ($greatChilds as $greatChild) {
+                    if (json_decode($greatChild->paths) != null) {
                         $greatChilds2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->get();
                         foreach ($greatChilds2 as $greatChild2) {
+                            if (json_decode($greatChild2->paths) != null) {
                                 if (in_array($arrival->id, json_decode($greatChild2->paths))) {
                                     $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
                                     return;
                                 }
+                            }
                         }
+                    }
                 }
+            }
         }
-
         //Vème niveau de séparation
-        foreach ($childs as $child) {
+        foreach ($childs_from_start as $child) {
+            if (json_decode($child->paths) != null) {
                 $greatChilds = Entry::query()->whereIn('id', json_decode($child->paths))->get();
                 foreach ($greatChilds as $greatChild) {
+                    if (json_decode($greatChild->paths) != null) {
                         $greatChilds2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->get();
                         foreach ($greatChilds2 as $greatChild2) {
+                            if (json_decode($greatChild2->paths) != null) {
                                 $greatChilds3 = Entry::query()->whereIn('id', json_decode($greatChild2->paths))->get();
                                 foreach ($greatChilds3 as $greatChild3) {
+                                    if (json_decode($greatChild3->paths) != null) {
                                         if (in_array($arrival->id, json_decode($greatChild3->paths))) {
                                             $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
                                             return;
                                         }
+                                    }
                                 }
+                            }
                         }
+                    }
                 }
+            }
         }
-
         //VIème niveau de séparation
-        foreach ($childs as $child) {
+        foreach ($childs_from_start as $child) {
+            if (json_decode($child->paths) != null) {
                 $greatChilds = Entry::query()->whereIn('id', json_decode($child->paths))->get();
                 foreach ($greatChilds as $greatChild) {
+                    if (json_decode($greatChild->paths) != null) {
                         $greatChilds2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->get();
                         foreach ($greatChilds2 as $greatChild2) {
+                            if (json_decode($greatChild2->paths) != null) {
                                 $greatChilds3 = Entry::query()->whereIn('id', json_decode($greatChild2->paths))->get();
                                 foreach ($greatChilds3 as $greatChild3) {
+                                    if (json_decode($greatChild3->paths) != null) {
                                         $greatChilds4 = Entry::query()->whereIn('id', json_decode($greatChild3->paths))->get();
                                         foreach ($greatChilds4 as $greatChild4) {
+                                            if (json_decode($greatChild4->paths) != null) {
                                                 if (in_array($arrival->id, json_decode($greatChild4->paths))) {
                                                     $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $greatChild4->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
                                                     return;
                                                 }
+                                            }
                                         }
+                                    }
                                 }
+                            }
                         }
+                    }
                 }
+            }
         }
         if (empty($this->resultMessages)) {
             $this->resultMessages[] = "La théorie est fausse ?";

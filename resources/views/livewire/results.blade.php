@@ -1,5 +1,5 @@
 <div class="text-center">
-    <h2>Résultats de la recherche :</h2>
+{{--    <h2>Résultats de la recherche :</h2>--}}
     <ul style="list-style-type: none;">
         @if ($resultMessages)
             @foreach ($resultMessages as $message)

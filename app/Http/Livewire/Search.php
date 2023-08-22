@@ -9,14 +9,15 @@ class Search extends Component
 {
     public string $start = '';
     public string $end = '';
-    
 
-    public array $searchResults = [];
+
+    public array $startSearchResults = [];
+    public array $endSearchResults = [];
 
     public function updatedStart()
     {
         if ($this->start != '') {
-            $this->searchResults =
+            $this->startSearchResults =
                 Entry::query()
                 ->where('paths', '!=', null)
                 ->where('title', 'like', '%' . $this->start . '%')
@@ -24,14 +25,14 @@ class Search extends Component
                 ->pluck('title')
                 ->toArray();
         } else {
-            $this->searchResults = [];
+            $this->startSearchResults = [];
         }
     }
 
     public function updatedEnd()
     {
-        if ($this->end != '') { 
-            $this->searchResults =
+        if ($this->end != '') {
+            $this->endSearchResults =
                 Entry::query()
                 ->where('paths', '!=', null)
                 ->where('title', 'like', '%' . $this->end . '%')
@@ -39,7 +40,7 @@ class Search extends Component
                 ->pluck('title')
                 ->toArray();
         } else {
-            $this->searchResults = [];
+            $this->endSearchResults = [];
         }
     }
 
