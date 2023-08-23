@@ -10,6 +10,9 @@ class Search extends Component
     public string $start = '';
     public string $end = '';
 
+    public ?bool $allShortestPaths = false;
+
+
 
     public array $startSearchResults = [];
     public array $endSearchResults = [];
@@ -46,8 +49,7 @@ class Search extends Component
 
     public function submit()
     {
-
-        $this->emit('searchSubmitted', $this->start, $this->end);
+        $this->emit('searchSubmitted', $this->start, $this->end, $this->allShortestPaths);
     }
 
 

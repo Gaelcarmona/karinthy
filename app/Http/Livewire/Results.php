@@ -12,18 +12,21 @@ class Results extends Component
     public array $resultMessages = [];
     protected $listeners = ['searchSubmitted' => 'showResults'];
 
-    public function showResults($start, $end)
+    public function showResults($start, $end, $allShortestPaths)
     {
+        if ($allShortestPaths) {
+
+        }
         $dateDebut = Carbon::now();
         ini_set('memory_limit', '32768M');
         $start = Entry::query()
-        ->where('title', $start)
-        ->where('paths', '!=', null)
-        ->first();
+            ->where('title', $start)
+            ->where('paths', '!=', null)
+            ->first();
         $arrival = Entry::query()
-        ->where('title', $end)
-        ->where('paths', '!=', null)
-        ->first();
+            ->where('title', $end)
+            ->where('paths', '!=', null)
+            ->first();
         if ($start === null) {
             $this->resultMessages[] = 'Page de départ inconnue ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
             return;
@@ -35,7 +38,7 @@ class Results extends Component
         //Ier niveau de séparation
         if (json_decode($start->paths) != null) {
             if (in_array($arrival->id, json_decode($start->paths))) {
-                $this->resultMessages[] = $start->title . '->' . $arrival->title . ' sur la page de départ ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+                $this->resultMessages[] = $start->title . '->' . $arrival->title;
                 return;
             }
         }
@@ -48,8 +51,11 @@ class Results extends Component
             if (json_decode($child->paths) != null) {
 
                 if (in_array($arrival->id, json_decode($child->paths))) {
-                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                    return;
+                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $arrival->title;
+                    if (!$allShortestPaths) {
+                        return;
+
+                    }
                 }
             }
         }
@@ -57,9 +63,9 @@ class Results extends Component
         //-------------------------------------------------------------------------------------------------------------------------------------
 
 
-        // if (!empty($this->resultMessages)) {
-        //     return;
-        // }
+        if (!empty($this->resultMessages)) {
+            return;
+        }
         //IIIème niveau de séparation
         foreach ($childs_from_start as $child) {
             if (json_decode($child->paths) != null) {
@@ -67,16 +73,19 @@ class Results extends Component
                 foreach ($greatChilds as $greatChild) {
                     if (json_decode($greatChild->paths) != null) {
                         if (in_array($arrival->id, json_decode($greatChild->paths))) {
-                            $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-//                            return;
+                            $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $arrival->title;
+                            if (!$allShortestPaths) {
+                                return;
+
+                            }
                         }
                     }
                 }
             }
         }
-         if (!empty($this->resultMessages)) {
-             return;
-         }
+        if (!empty($this->resultMessages)) {
+            return;
+        }
         //IVème niveau de séparation
         foreach ($childs_from_start as $child) {
             if (json_decode($child->paths) != null) {
@@ -87,14 +96,20 @@ class Results extends Component
                         foreach ($greatChilds2 as $greatChild2) {
                             if (json_decode($greatChild2->paths) != null) {
                                 if (in_array($arrival->id, json_decode($greatChild2->paths))) {
-                                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                                    return;
+                                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $arrival->title;
+                                    if (!$allShortestPaths) {
+                                        return;
+
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+        if (!empty($this->resultMessages)) {
+            return;
         }
         //Vème niveau de séparation
         foreach ($childs_from_start as $child) {
@@ -109,8 +124,11 @@ class Results extends Component
                                 foreach ($greatChilds3 as $greatChild3) {
                                     if (json_decode($greatChild3->paths) != null) {
                                         if (in_array($arrival->id, json_decode($greatChild3->paths))) {
-                                            $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                                            return;
+                                            $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $arrival->title;
+                                            if (!$allShortestPaths) {
+                                                return;
+
+                                            }
                                         }
                                     }
                                 }
@@ -119,6 +137,9 @@ class Results extends Component
                     }
                 }
             }
+        }
+        if (!empty($this->resultMessages)) {
+            return;
         }
         //VIème niveau de séparation
         foreach ($childs_from_start as $child) {
@@ -136,8 +157,11 @@ class Results extends Component
                                         foreach ($greatChilds4 as $greatChild4) {
                                             if (json_decode($greatChild4->paths) != null) {
                                                 if (in_array($arrival->id, json_decode($greatChild4->paths))) {
-                                                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $greatChild4->title . '->' . $arrival->title . ' ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
-                                                    return;
+                                                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $greatChild4->title . '->' . $arrival->title;
+                                                    if (!$allShortestPaths) {
+                                                        return;
+
+                                                    }
                                                 }
                                             }
                                         }
