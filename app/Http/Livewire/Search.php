@@ -12,7 +12,7 @@ class Search extends Component
 
     public ?bool $allShortestPaths = false;
 
-
+    public bool $formSubmitted = false;
 
     public array $startSearchResults = [];
     public array $endSearchResults = [];
@@ -22,11 +22,11 @@ class Search extends Component
         if ($this->start != '') {
             $this->startSearchResults =
                 Entry::query()
-                ->where('paths', '!=', null)
-                ->where('title', 'like', '%' . $this->start . '%')
-                ->limit(10)
-                ->pluck('title')
-                ->toArray();
+                    ->where('paths', '!=', null)
+                    ->where('title', 'like', '%' . $this->start . '%')
+                    ->limit(10)
+                    ->pluck('title')
+                    ->toArray();
         } else {
             $this->startSearchResults = [];
         }
@@ -37,11 +37,11 @@ class Search extends Component
         if ($this->end != '') {
             $this->endSearchResults =
                 Entry::query()
-                ->where('paths', '!=', null)
-                ->where('title', 'like', '%' . $this->end . '%')
-                ->limit(10)
-                ->pluck('title')
-                ->toArray();
+                    ->where('paths', '!=', null)
+                    ->where('title', 'like', '%' . $this->end . '%')
+                    ->limit(10)
+                    ->pluck('title')
+                    ->toArray();
         } else {
             $this->endSearchResults = [];
         }
@@ -49,6 +49,7 @@ class Search extends Component
 
     public function submit()
     {
+        $this->formSubmitted = true;
         $this->emit('searchSubmitted', $this->start, $this->end, $this->allShortestPaths);
     }
 
