@@ -1,6 +1,6 @@
 <div>
     @unless ($formSubmitted)
-        <div class="flex items-center justify-center h-screen">
+        <div class="flex items-center justify-center">
             <div class="h-100 w-100 md:h-172 md:w-172 bg-gray-300 flex items-center justify-center rounded p-3">
                 <div class="md:w-1/2 md:pl-4 md:pt-0 md:pt-4 md:order-1">
                     <img src="{{ asset('images/six_degrees_of_separation.svg.png') }}" alt="six_degrees_of_separation">
@@ -13,8 +13,8 @@
                             href="https://fr.wikipedia.org/wiki/Frigyes_Karinthy" target="_blank">Frigyes Karinthy</a>,
                         notre
                         plateforme vous invite à découvrir la magie qui se cache derrière chaque clic. Parcourez les
-                        méandres des pages Wikipedia à travers des parcours de graphe ingénieux, et laissez-vous émerveiller
-                        par les connexions qui relient des personnages, des lieux, des concepts et bien plus encore.</p>
+                        méandres des pages Wikipedia et laissez-vous émerveiller par les connexions qui relient des personnages,
+                         des lieux, des concepts et bien plus encore.</p>
                     <br>
                     <p>Notre objectif est simple : vous offrir un moyen captivant et ludique de mettre en lumière les
                         chemins inattendus qui tissent la toile de la connaissance. Plongez dans le défi des wikispeedruns,

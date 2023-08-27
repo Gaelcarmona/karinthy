@@ -14,9 +14,6 @@ class Results extends Component
 
     public function showResults($start, $end, $allShortestPaths)
     {
-        if ($allShortestPaths) {
-
-        }
         $dateDebut = Carbon::now();
         ini_set('memory_limit', '32768M');
         $start = Entry::query()
