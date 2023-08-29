@@ -28,7 +28,6 @@
                 @endif
             </ul>
             <div wire:loading>
-                {{--        Chargement en cours... --}}
-                <img src="svg-loaders/puff.svg" />
+                <img src="svg-loaders/puff.svg" alt="loader"/>
             </div>
         </div>

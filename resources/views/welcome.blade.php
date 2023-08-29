@@ -10,20 +10,23 @@
     @livewireStyles
 </head>
 
-<body class="antialiased d-flex flex-column" style="background-color: #adb5bd;">
-<nav style="background-color:#012e40" class="p-4 h-10">
+<body class="flex flex-col h-screen justify-between" style="background-color: #f8fafc">
+<nav style="background-color:#012e40" class="p-4 top-0 w-full">
     <div class='mx-auto text-center'>
         <a class="navbar-brand text-white" href="https://fr.wikipedia.org/wiki/Frigyes_Karinthy" target="_blank">
             Karinthy
         </a>
     </div>
 </nav>
-
-<main class="pt-4 flex-grow-1 ">
+<main class="w-4/5 self-center items-center">
     <livewire:search/>
     <livewire:results/>
 </main>
+<footer class='text-white' style="background-color:#012e40">
+    <p class='mx-auto text-center p-4'>Juillet 2023 -
+        <a href="https://www.gaelcarmona.com" target="_blank">Gaël Carmona</a>
+    </p>
+</footer>
 @livewireScripts
 </body>
-
 </html>
