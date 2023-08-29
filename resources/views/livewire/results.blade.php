@@ -1,12 +1,4 @@
-        <div class="text-center bg-gray-300 w-4/5 mx-auto rounded">
-            <a wire:loading href="{{ back()->getTargetUrl() }}" class="flex justify-center"> <img
-                    src="{{ asset('images/retry-svgrepo-com.svg') }}" alt="retry">
-            </a>
-            @if ($resultMessages)
-                <a href="{{ back()->getTargetUrl() }}" class="flex justify-center"> <img
-                        src="{{ asset('images/retry-svgrepo-com.svg') }}" alt="retry">
-                </a>
-            @endif
+        <div class="ml-[40%]">
             <ul style="list-style-type: none;">
                 @if ($resultMessages)
                     @foreach ($resultMessages as $message)

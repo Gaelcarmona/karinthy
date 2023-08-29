@@ -1,15 +1,13 @@
-@unless ($formSubmitted)
-    <div class=" md:h-172 md:w-172 bg-gray-300 flex rounded p-3">
+    <div class=" md:h-172 md:w-172 flex rounded p-3 items-center">
         <div class="md:w-1/2 md:pl-4 md:pt-0 md:pt-4 md:order-1">
             <img src="{{ asset('images/six_degrees_of_separation.svg.png') }}" alt="six_degrees_of_separation">
         </div>
-        <div class="md:w-1/2 md:pr-4 md:pb-0 md:pb-4 md:order-2 mx-3">
+        <div class="md:w-1/2 md:pr-4 md:pb-0 md:pb-4 md:order-2 mx-3 items-center">
             <p>Bienvenue sur notre site dédié à l'exploration fascinante des liens qui unissent le vaste univers de
                 la connaissance. Inspiré par la théorie des <a style="color: #03a696" class="navbar-brand text-white"
-                                                               href="https://fr.wikipedia.org/wiki/Six_degrés_de_séparation"
-                                                               target="_blank">six degrés de
+                    href="https://fr.wikipedia.org/wiki/Six_degrés_de_séparation" target="_blank">six degrés de
                     séparation</a> de <a style="color: #03a696" class="navbar-brand text-white"
-                                         href="https://fr.wikipedia.org/wiki/Frigyes_Karinthy" target="_blank">Frigyes
+                    href="https://fr.wikipedia.org/wiki/Frigyes_Karinthy" target="_blank">Frigyes
                     Karinthy</a>,
                 notre
                 plateforme vous invite à découvrir la magie qui se cache derrière chaque clic. Parcourez les
@@ -31,57 +29,63 @@
                         <div class="flex items-center mx-3">
                             <label class="flex-grow h-full w-40">
                                 <input type="text" placeholder="Page de départ" list="startOptions"
-                                       wire:model.debounce.500ms="start"
-                                       class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
-                                       x-ref="startInput">
+                                    wire:model.debounce.500ms="start"
+                                    class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
+                                    x-ref="startInput">
                                 <datalist id="startOptions">
                                     @foreach ($startSearchResults as $result)
                                         <option wire:key="{{ $result }}" data-value="{{ $result }}"
-                                                value="{{ $result }}">
+                                            value="{{ $result }}">
                                         </option>
                                     @endforeach
                                 </datalist>
                             </label>
                             <button type="button"
-                                    class="border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
-                                    wire:click="shuffleStart">
+                                class="border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
+                                wire:click="shuffleStart">
                                 <img src="{{ asset('images/shuffle-svgrepo-com.svg') }}" alt="shuffle">
                             </button>
                         </div>
                         <div class="flex items-center mx-3">
                             <label class="flex-grow h-full w-40">
                                 <input type="text" placeholder="Page d'arrivée" list="endOptions"
-                                       wire:model.debounce.500ms="end"
-                                       class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
-                                       x-ref="endInput">
+                                    wire:model.debounce.500ms="end"
+                                    class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
+                                    x-ref="endInput">
                                 <datalist id="endOptions">
                                     @foreach ($endSearchResults as $result)
                                         <option wire:key="{{ $result }}" data-value="{{ $result }}"
-                                                value="{{ $result }}">
+                                            value="{{ $result }}">
                                         </option>
                                     @endforeach
                                 </datalist>
                             </label>
                             <button type="button"
-                                    class="border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
-                                    wire:click="shuffleEnd">
+                                class="border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
+                                wire:click="shuffleEnd">
                                 <img src="{{ asset('images/shuffle-svgrepo-com.svg') }}" alt="shuffle">
                             </button>
                         </div>
                     </div>
                     <div class="my-3">
                         <label>
-                            <input type="checkbox" x-ref="allShortestPathsInput" wire:model="allShortestPaths"/>
+                            <input type="checkbox" x-ref="allShortestPathsInput" wire:model="allShortestPaths" />
                             Afficher tous les chemins les plus rapides
                             (recherche plus longue).
                         </label>
                     </div>
-                    <button type="submit" class="text-white font-bold  px-4 rounded"
+                    @if (!$formSubmitted)
+                        <button type="submit" class="text-white font-bold  px-4 rounded"
                             style="background-color: #03a696">
-                        Rechercher
-                    </button>
+                            Rechercher
+                        </button>
+                    @else
+                        <a href="{{ back()->getTargetUrl() }}"  class="text-white font-bold  px-4 rounded"
+                            style="background-color: #03a696">
+                            Réinitialiser
+                        </a>
+                    @endif
                 </div>
             </form>
         </div>
     </div>
-@endunless
