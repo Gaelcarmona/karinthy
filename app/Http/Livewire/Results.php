@@ -87,7 +87,7 @@ class Results extends Component
                         $data = [];
                     }
                     $newData = [
-                        $child->title,
+                        $child->id,
                     ];
                     $data[] = $newData;
                     $path->update(['data' => json_encode($data)]);
@@ -120,7 +120,7 @@ class Results extends Component
                                 $data = [];
                             }
                             $newData = [
-                                $child->title, $greatChild->title,
+                                $child->id, $greatChild->id,
                             ];
                             $data[] = $newData;
                             $path->update(['data' => json_encode($data)]);
@@ -161,7 +161,7 @@ class Results extends Component
                                         $data = [];
                                     }
                                     $newData = [
-                                        $child->title, $greatChild->title, $greatChild2->title,
+                                        $child->id, $greatChild->id, $greatChild2->id,
                                     ];
                                     $data[] = $newData;
                                     $path->update(['data' => json_encode($data)]);
@@ -207,7 +207,7 @@ class Results extends Component
                                                 $data = [];
                                             }
                                             $newData = [
-                                                $child->title, $greatChild->title, $greatChild2->title, $greatChild3->title,
+                                                $child->id, $greatChild->id, $greatChild2->id, $greatChild3->id,
                                             ];
                                             $data[] = $newData;
                                             $path->update(['data' => json_encode($data)]);
@@ -258,7 +258,7 @@ class Results extends Component
                                                         $data = [];
                                                     }
                                                     $newData = [
-                                                        $child->title, $greatChild->title, $greatChild2->title, $greatChild3->title, $greatChild4->title,
+                                                        $child->id, $greatChild->id, $greatChild2->id, $greatChild3->id, $greatChild4->id,
                                                     ];
                                                     $data[] = $newData;
                                                     $path->update(['data' => json_encode($data)]);
