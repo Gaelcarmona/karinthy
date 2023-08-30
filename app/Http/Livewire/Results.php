@@ -4,38 +4,64 @@ namespace App\Http\Livewire;
 
 use App\Models\AvailableEntry;
 use App\Models\Entry;
+use App\Models\Path;
 use Carbon\Carbon;
 use Livewire\Component;
 
 class Results extends Component
 {
     public array $resultMessages = [];
-    protected $listeners = ['searchSubmitted' => 'showResults'];
 
-    public function showResults($start, $end, $allShortestPaths)
+    public $path;
+
+    protected $listeners = [
+        'searchSubmitted' => 'search',
+    ];
+
+    public function search($start, $end)
     {
-        $dateDebut = Carbon::now();
-        ini_set('memory_limit', '32768M');
+        $path = null;
         $start = Entry::query()
             ->where('title', $start)
             ->where('paths', '!=', null)
             ->first();
-        $arrival = Entry::query()
+        $end = Entry::query()
             ->where('title', $end)
             ->where('paths', '!=', null)
             ->first();
+        if ($start !== null && $end !== null) {
+            $path = Path::query()
+                ->where('start_entry_id', $start->id)
+                ->where('end_entry_id', $end->id)
+                ->first();
+        }
+        if ($path == null) {
+            $this->showResults($start, $end);
+        }
+    }
+
+    public function showResults($start, $end)
+    {
+        $path = null;
+        $startTime = time();
+        ini_set('memory_limit', '32768M');
+
+
         if ($start === null) {
-            $this->resultMessages[] = 'Page de départ inconnue ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+            $this->resultMessages[] = 'Page de départ inconnue ';
             return;
         }
-        if ($arrival === null) {
-            $this->resultMessages[] = 'Page d\'arrivée inconnue ' . $dateDebut->diff(Carbon::now())->format('%h heures %i minutes %s secondes');
+        if ($end === null) {
+            $this->resultMessages[] = 'Page d\'arrivée inconnue ';
             return;
         }
         //Ier niveau de séparation
         if (json_decode($start->paths) != null) {
-            if (in_array($arrival->id, json_decode($start->paths))) {
-                $this->resultMessages[] = $start->title . '->' . $arrival->title;
+            if (in_array($end->id, json_decode($start->paths))) {
+                $path = Path::updateOrCreate([
+                    'start_entry_id' => $start->id,
+                    'end_entry_id' => $end->id,
+                ]);
                 return;
             }
         }
@@ -47,20 +73,31 @@ class Results extends Component
         foreach ($childs_from_start as $child) {
             if (json_decode($child->paths) != null) {
 
-                if (in_array($arrival->id, json_decode($child->paths))) {
-                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $arrival->title;
-                    if (!$allShortestPaths) {
-                        return;
+                if (in_array($end->id, json_decode($child->paths))) {
 
+                    $path = Path::query()
+                        ->where('start_entry_id', $start->id)
+                        ->where('end_entry_id', $end->id)
+                        ->firstOrCreate([
+                            'start_entry_id' => $start->id,
+                            'end_entry_id' => $end->id,
+                        ]);
+                    $data = json_decode($path->data, true);
+                    if ($data === null) {
+                        $data = [];
                     }
+                    $newData = [
+                        $child->title,
+                    ];
+                    $data[] = $newData;
+                    $path->update(['data' => json_encode($data)]);
                 }
             }
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------
 
-
-        if (!empty($this->resultMessages)) {
+        if ($path !== null) {
             return;
         }
         //IIIème niveau de séparation
@@ -69,18 +106,33 @@ class Results extends Component
                 $greatChilds = Entry::query()->whereIn('id', json_decode($child->paths))->get();
                 foreach ($greatChilds as $greatChild) {
                     if (json_decode($greatChild->paths) != null) {
-                        if (in_array($arrival->id, json_decode($greatChild->paths))) {
-                            $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $arrival->title;
-                            if (!$allShortestPaths) {
-                                return;
+                        if (in_array($end->id, json_decode($greatChild->paths))) {
 
+                            $path = Path::query()
+                                ->where('start_entry_id', $start->id)
+                                ->where('end_entry_id', $end->id)
+                                ->firstOrCreate([
+                                    'start_entry_id' => $start->id,
+                                    'end_entry_id' => $end->id,
+                                ]);
+                            $data = json_decode($path->data, true);
+                            if ($data === null) {
+                                $data = [];
                             }
+                            $newData = [
+                                $child->title, $greatChild->title,
+                            ];
+                            $data[] = $newData;
+                            $path->update(['data' => json_encode($data)]);
                         }
                     }
                 }
             }
         }
-        if (!empty($this->resultMessages)) {
+        if ($path !== null) {
+            return;
+        }
+        if (time() - $startTime >= 5 * 60) {
             return;
         }
         //IVème niveau de séparation
@@ -91,13 +143,28 @@ class Results extends Component
                     if (json_decode($greatChild->paths) != null) {
                         $greatChilds2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->get();
                         foreach ($greatChilds2 as $greatChild2) {
+                            if (time() - $startTime >= 5 * 60) {
+                                return;
+                            }
                             if (json_decode($greatChild2->paths) != null) {
-                                if (in_array($arrival->id, json_decode($greatChild2->paths))) {
-                                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $arrival->title;
-                                    if (!$allShortestPaths) {
-                                        return;
+                                if (in_array($end->id, json_decode($greatChild2->paths))) {
 
+                                    $path = Path::query()
+                                        ->where('start_entry_id', $start->id)
+                                        ->where('end_entry_id', $end->id)
+                                        ->firstOrCreate([
+                                            'start_entry_id' => $start->id,
+                                            'end_entry_id' => $end->id,
+                                        ]);
+                                    $data = json_decode($path->data, true);
+                                    if ($data === null) {
+                                        $data = [];
                                     }
+                                    $newData = [
+                                        $child->title, $greatChild->title, $greatChild2->title,
+                                    ];
+                                    $data[] = $newData;
+                                    $path->update(['data' => json_encode($data)]);
                                 }
                             }
                         }
@@ -105,7 +172,10 @@ class Results extends Component
                 }
             }
         }
-        if (!empty($this->resultMessages)) {
+        if ($path !== null) {
+            return;
+        }
+        if (time() - $startTime >= 5 * 60) {
             return;
         }
         //Vème niveau de séparation
@@ -116,16 +186,31 @@ class Results extends Component
                     if (json_decode($greatChild->paths) != null) {
                         $greatChilds2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->get();
                         foreach ($greatChilds2 as $greatChild2) {
+                            if (time() - $startTime >= 5 * 60) {
+                                return;
+                            }
                             if (json_decode($greatChild2->paths) != null) {
                                 $greatChilds3 = Entry::query()->whereIn('id', json_decode($greatChild2->paths))->get();
                                 foreach ($greatChilds3 as $greatChild3) {
                                     if (json_decode($greatChild3->paths) != null) {
-                                        if (in_array($arrival->id, json_decode($greatChild3->paths))) {
-                                            $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $arrival->title;
-                                            if (!$allShortestPaths) {
-                                                return;
+                                        if (in_array($end->id, json_decode($greatChild3->paths))) {
 
+                                            $path = Path::query()
+                                                ->where('start_entry_id', $start->id)
+                                                ->where('end_entry_id', $end->id)
+                                                ->firstOrCreate([
+                                                    'start_entry_id' => $start->id,
+                                                    'end_entry_id' => $end->id,
+                                                ]);
+                                            $data = json_decode($path->data, true);
+                                            if ($data === null) {
+                                                $data = [];
                                             }
+                                            $newData = [
+                                                $child->title, $greatChild->title, $greatChild2->title, $greatChild3->title,
+                                            ];
+                                            $data[] = $newData;
+                                            $path->update(['data' => json_encode($data)]);
                                         }
                                     }
                                 }
@@ -135,7 +220,10 @@ class Results extends Component
                 }
             }
         }
-        if (!empty($this->resultMessages)) {
+        if ($path !== null) {
+            return;
+        }
+        if (time() - $startTime >= 5 * 60) {
             return;
         }
         //VIème niveau de séparation
@@ -146,6 +234,9 @@ class Results extends Component
                     if (json_decode($greatChild->paths) != null) {
                         $greatChilds2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->get();
                         foreach ($greatChilds2 as $greatChild2) {
+                            if (time() - $startTime >= 5 * 60) {
+                                return;
+                            }
                             if (json_decode($greatChild2->paths) != null) {
                                 $greatChilds3 = Entry::query()->whereIn('id', json_decode($greatChild2->paths))->get();
                                 foreach ($greatChilds3 as $greatChild3) {
@@ -153,12 +244,24 @@ class Results extends Component
                                         $greatChilds4 = Entry::query()->whereIn('id', json_decode($greatChild3->paths))->get();
                                         foreach ($greatChilds4 as $greatChild4) {
                                             if (json_decode($greatChild4->paths) != null) {
-                                                if (in_array($arrival->id, json_decode($greatChild4->paths))) {
-                                                    $this->resultMessages[] = $start->title . '->' . $child->title . '->' . $greatChild->title . '->' . $greatChild2->title . '->' . $greatChild3->title . '->' . $greatChild4->title . '->' . $arrival->title;
-                                                    if (!$allShortestPaths) {
-                                                        return;
+                                                if (in_array($end->id, json_decode($greatChild4->paths))) {
 
+                                                    $path = Path::query()
+                                                        ->where('start_entry_id', $start->id)
+                                                        ->where('end_entry_id', $end->id)
+                                                        ->firstOrCreate([
+                                                            'start_entry_id' => $start->id,
+                                                            'end_entry_id' => $end->id,
+                                                        ]);
+                                                    $data = json_decode($path->data, true);
+                                                    if ($data === null) {
+                                                        $data = [];
                                                     }
+                                                    $newData = [
+                                                        $child->title, $greatChild->title, $greatChild2->title, $greatChild3->title, $greatChild4->title,
+                                                    ];
+                                                    $data[] = $newData;
+                                                    $path->update(['data' => json_encode($data)]);
                                                 }
                                             }
                                         }

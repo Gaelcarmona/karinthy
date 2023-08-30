@@ -10,8 +10,6 @@ class Search extends Component
     public string $start = '';
     public string $end = '';
 
-    public ?bool $allShortestPaths = false;
-
     public bool $formSubmitted = false;
 
     public array $startSearchResults = [];
@@ -57,12 +55,12 @@ class Search extends Component
                 Entry::query()
                 ->where('id', '=', $randomId)
                 ->first();
-                if ($randomStart != null) {
-                    if ($randomStart->paths != null) {
-                        $correctEntry = true;
-                        $this->start = $randomStart->title;
-                    }
+            if ($randomStart != null) {
+                if ($randomStart->paths != null) {
+                    $correctEntry = true;
+                    $this->start = $randomStart->title;
                 }
+            }
         }
     }
 
@@ -76,19 +74,19 @@ class Search extends Component
                 Entry::query()
                 ->where('id', '=', $randomId)
                 ->first();
-                if ($randomEnd != null) {
-                    if ($randomEnd->paths != null) {
-                        $correctEntry = true;
-                        $this->end = $randomEnd->title;
-                    }
+            if ($randomEnd != null) {
+                if ($randomEnd->paths != null) {
+                    $correctEntry = true;
+                    $this->end = $randomEnd->title;
                 }
+            }
         }
     }
 
     public function submit()
     {
         $this->formSubmitted = true;
-        $this->emit('searchSubmitted', $this->start, $this->end, $this->allShortestPaths);
+        $this->emit('searchSubmitted', $this->start, $this->end);
     }
 
 

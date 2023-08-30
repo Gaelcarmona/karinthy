@@ -67,20 +67,13 @@
                             </button>
                         </div>
                     </div>
-                    <div class="my-3">
-                        <label>
-                            <input type="checkbox" x-ref="allShortestPathsInput" wire:model="allShortestPaths" />
-                            Afficher tous les chemins les plus rapides
-                            (recherche plus longue).
-                        </label>
-                    </div>
                     @if (!$formSubmitted)
-                        <button type="submit" class="text-white font-bold  px-4 rounded"
+                        <button type="submit" class="text-white font-bold  px-4 rounded my-3"
                             style="background-color: #03a696">
                             Rechercher
                         </button>
                     @else
-                        <a href="{{ back()->getTargetUrl() }}"  class="text-white font-bold  px-4 rounded"
+                        <a href="{{ back()->getTargetUrl() }}" class="text-white font-bold  px-4 rounded my-3"
                             style="background-color: #03a696">
                             Réinitialiser
                         </a>
