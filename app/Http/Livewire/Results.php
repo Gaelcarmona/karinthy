@@ -55,6 +55,10 @@ class Results extends Component
             $this->resultMessages[] = 'Page d\'arrivée inconnue ';
             return;
         }
+        if ($end == $start) {
+            $this->resultMessages[] = 'Page de départ et d\'arrivée identiques';
+            return;
+        }
         //Ier niveau de séparation
         if (json_decode($start->paths) != null) {
             if (in_array($end->id, json_decode($start->paths))) {
