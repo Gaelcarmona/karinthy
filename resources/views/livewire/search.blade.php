@@ -67,10 +67,17 @@
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="text-white font-bold  px-4 rounded my-3"
-                        style="background-color: #03a696">
-                        Rechercher
-                    </button>
+                    @if ($paths !== null || !$formSubmitted)
+                        <button type="submit" class="text-white font-bold  px-4 rounded my-3"
+                            style="background-color: #03a696">
+                            Rechercher
+                        </button>
+                    @else
+                        <a href="{{ back()->getTargetUrl() }}" class="text-white font-bold  px-4 rounded my-3"
+                            style="background-color: #03a696">
+                            Réinitialiser
+                        </a>
+                    @endif
                 </div>
             </form>
         </div>

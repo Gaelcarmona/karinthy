@@ -9,11 +9,15 @@ class Search extends Component
 {
     public string $start = '';
     public string $end = '';
+    public $paths;
 
     public bool $formSubmitted = false;
 
     public array $startSearchResults = [];
     public array $endSearchResults = [];
+
+    protected $listeners = ['updatePaths' => 'updatePaths'];
+
 
     public function updatedStart()
     {
@@ -30,10 +34,9 @@ class Search extends Component
         }
     }
     
-
     public function updatedEnd()
     {
-        if ($this->end != '' && strlen($this->start) >= 3) {
+        if ($this->end != '' && strlen($this->end) >= 3) {
             $this->endSearchResults =
                 Entry::query()
                 ->where('paths', '!=', null)
@@ -86,9 +89,15 @@ class Search extends Component
 
     public function submit()
     {
-        $this->formSubmitted = true;
+        $this->formSubmitted = true;    
+        $this->paths = null;
         $this->emit('searchSubmitted', $this->start, $this->end);
     }
+
+    public function updatePaths($paths)
+{
+    $this->paths = $paths;
+}
 
 
     public function render()

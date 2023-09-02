@@ -13,7 +13,6 @@ class PathDisplay extends Component
     public $paths;
     public $start;
     public $end;
-    public bool $formSubmitted = false;
 
 
 
@@ -43,7 +42,6 @@ class PathDisplay extends Component
             $this->startId = $startEntry->id;
             $this->endId = $endEntry->id;
             $this->loadPath();
-            $this->formSubmitted = true;
         }
     }
 
@@ -53,6 +51,9 @@ class PathDisplay extends Component
             ->where('start_entry_id', $this->startId)
             ->where('end_entry_id', $this->endId)
             ->first();
+        if ($this->paths !== null) {
+            $this->emit('updatePaths', $this->paths);
+        }
     }
 
     public function render()
