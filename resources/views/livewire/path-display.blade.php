@@ -1,4 +1,4 @@
-<div class="ml-[40%]">
+<div class="md:h-172 md:w-172 flex rounded p-3 items-center">
     <ul style="list-style-type: none;">
         @if ($paths)
             @foreach (json_decode($paths->data) as $path)
@@ -34,6 +34,5 @@
     // Rappel périodique
     var intervalId = setInterval(function() {
         @this.call('loadPath');
-        console.log("ici");
     }, 1000);
 </script>

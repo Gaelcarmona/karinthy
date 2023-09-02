@@ -1,4 +1,4 @@
-    <div class=" md:h-172 md:w-172 flex rounded p-3 items-center">
+    <div class="md:h-172 md:w-172 flex rounded p-3 items-center">
         <div class="md:w-1/2 md:pl-4 md:pt-0 md:pt-4 md:order-1">
             <img src="{{ asset('images/six_degrees_of_separation.svg.png') }}" alt="six_degrees_of_separation">
         </div>
@@ -29,7 +29,7 @@
                         <div class="flex items-center mx-3">
                             <label class="flex-grow h-full w-40">
                                 <input type="text" placeholder="Page de départ" list="startOptions"
-                                    wire:model.debounce.500ms="start"
+                                    wire:model.debounce.300ms="start"
                                     class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
                                     x-ref="startInput">
                                 <datalist id="startOptions">
@@ -49,7 +49,7 @@
                         <div class="flex items-center mx-3">
                             <label class="flex-grow h-full w-40">
                                 <input type="text" placeholder="Page d'arrivée" list="endOptions"
-                                    wire:model.debounce.500ms="end"
+                                    wire:model.debounce.300ms="end"
                                     class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
                                     x-ref="endInput">
                                 <datalist id="endOptions">
@@ -67,17 +67,10 @@
                             </button>
                         </div>
                     </div>
-                    @if (!$formSubmitted)
-                        <button type="submit" class="text-white font-bold  px-4 rounded my-3"
-                            style="background-color: #03a696">
-                            Rechercher
-                        </button>
-                    @else
-                        <a href="{{ back()->getTargetUrl() }}" class="text-white font-bold  px-4 rounded my-3"
-                            style="background-color: #03a696">
-                            Réinitialiser
-                        </a>
-                    @endif
+                    <button type="submit" class="text-white font-bold  px-4 rounded my-3"
+                        style="background-color: #03a696">
+                        Rechercher
+                    </button>
                 </div>
             </form>
         </div>

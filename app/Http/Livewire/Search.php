@@ -17,7 +17,7 @@ class Search extends Component
 
     public function updatedStart()
     {
-        if ($this->start != '') {
+        if ($this->start != '' && strlen($this->start) >= 3) {
             $this->startSearchResults =
                 Entry::query()
                 ->where('paths', '!=', null)
@@ -29,10 +29,11 @@ class Search extends Component
             $this->startSearchResults = [];
         }
     }
+    
 
     public function updatedEnd()
     {
-        if ($this->end != '') {
+        if ($this->end != '' && strlen($this->start) >= 3) {
             $this->endSearchResults =
                 Entry::query()
                 ->where('paths', '!=', null)
