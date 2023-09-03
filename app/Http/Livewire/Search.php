@@ -20,14 +20,19 @@ class Search extends Component
                 Entry::query()
                 ->where('paths', '!=', null)
                 ->where('title', 'like', '%' . $this->start . '%')
-                ->limit(10)
+                ->limit(5)
                 ->pluck('title')
                 ->toArray();
         } else {
             $this->startSearchResults = [];
         }
     }
-    
+    public function selectStartResult($result)
+    {
+        $this->start = str_replace(".","'",$result);
+        $this->startSearchResults = [];
+    }
+
     public function updatedEnd()
     {
         if ($this->end != '' && strlen($this->end) >= 3) {
@@ -35,12 +40,18 @@ class Search extends Component
                 Entry::query()
                 ->where('paths', '!=', null)
                 ->where('title', 'like', '%' . $this->end . '%')
-                ->limit(10)
+                ->limit(5)
                 ->pluck('title')
                 ->toArray();
         } else {
             $this->endSearchResults = [];
         }
+    }
+
+    public function selectEndResult($result)
+    {
+        $this->end = str_replace(".","'",$result);
+        $this->endSearchResults = [];
     }
 
     public function shuffleStart()
@@ -83,7 +94,7 @@ class Search extends Component
 
     public function submit()
     {
-        $this->formSubmitted = true;    
+        $this->formSubmitted = true;
         $this->emit('searchSubmitted', $this->start, $this->end);
     }
 

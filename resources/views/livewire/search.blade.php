@@ -27,19 +27,30 @@
                 <div class="text-center">
                     <div class="flex flex-col space-y-4">
                         <div class="flex items-center mx-3">
-                            <label class="flex-grow h-full w-40">
-                                <input type="text" placeholder="Page de départ" list="startOptions"
-                                    wire:model.debounce.300ms="start"
-                                    class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
-                                    x-ref="startInput">
-                                <datalist id="startOptions">
-                                    @foreach ($startSearchResults as $result)
-                                        <option wire:key="{{ $result }}" data-value="{{ $result }}"
-                                            value="{{ $result }}">
-                                        </option>
-                                    @endforeach
-                                </datalist>
-                            </label>
+                            <div class="flex-grow h-full w-40">
+                                <input type="text"
+                                    class="bg-gray-100 focus:bg-white border-solid border-2 border-black rounded-tl rounded-bl w-full text-xl"
+                                    placeholder="Page de départ" wire:model.debounce.250ms="start">
+                                @if (!empty($startSearchResults))
+                                    <div class="relative">
+                                        <div class="absolute top-100 mt-1 w-full border bg-white shadow-xl rounded">
+                                            <ul class="p-3">
+                                                @foreach ($startSearchResults as $result)
+                                                    @php
+                                                        $resultWithoutLashes = str_replace("'", '.', $result);
+                                                    @endphp
+                                                    <li>
+                                                        <p class="p-2 flex block w-full rounded hover:bg-gray-100"
+                                                            wire:click="selectStartResult('{{ $resultWithoutLashes }}')">
+                                                            {{ $result }}
+                                                        </p>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                             <button type="button"
                                 class="border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
                                 wire:click="shuffleStart">
@@ -47,19 +58,30 @@
                             </button>
                         </div>
                         <div class="flex items-center mx-3">
-                            <label class="flex-grow h-full w-40">
-                                <input type="text" placeholder="Page d'arrivée" list="endOptions"
-                                    wire:model.debounce.300ms="end"
-                                    class="border-solid border-2 border-black rounded-tl rounded-bl w-full"
-                                    x-ref="endInput">
-                                <datalist id="endOptions">
-                                    @foreach ($endSearchResults as $result)
-                                        <option wire:key="{{ $result }}" data-value="{{ $result }}"
-                                            value="{{ $result }}">
-                                        </option>
-                                    @endforeach
-                                </datalist>
-                            </label>
+                            <div class="flex-grow h-full w-40">
+                                <input type="text"
+                                    class="bg-gray-100 focus:bg-white border-solid border-2 border-black rounded-tl rounded-bl w-full text-xl"
+                                    placeholder="Page d'arrivée" wire:model.debounce.250ms="end">
+                                @if (!empty($endSearchResults))
+                                    <div class="relative">
+                                        <div class="absolute top-100 mt-1 w-full border bg-white shadow-xl rounded">
+                                            <ul class="p-3">
+                                                @foreach ($endSearchResults as $result)
+                                                    @php
+                                                        $resultWithoutLashes = str_replace("'", '.', $result);
+                                                    @endphp
+                                                    <li>
+                                                        <p class="p-2 flex block w-full rounded hover:bg-gray-100"
+                                                            wire:click="selectEndResult('{{ $resultWithoutLashes }}')">
+                                                            {{ $result }}
+                                                        </p>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                             <button type="button"
                                 class="border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
                                 wire:click="shuffleEnd">
