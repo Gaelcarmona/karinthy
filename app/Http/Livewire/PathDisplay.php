@@ -14,14 +14,7 @@ class PathDisplay extends Component
     public $start;
     public $end;
 
-
-
     protected $listeners = ['pathUpdated' => '$refresh', 'searchSubmitted' => 'searchSubmitted',];
-
-    public function mount()
-    {
-        $this->loadPath();
-    }
 
     public function searchSubmitted($start, $end)
     {

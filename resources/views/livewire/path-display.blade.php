@@ -21,19 +21,36 @@
                     <br>
                 @endforeach
             @else
-            <li class="w-full">
-                <a href="{{ 'https://fr.wikipedia.org/wiki/' . $start }}" target="_blank"
-                    style="font-size: larger;color: #03a696">{{ $start }}</a>
-                <p class="inline mx-2">-></p>
-                <a href="{{ 'https://fr.wikipedia.org/wiki/' . $end }}" target="_blank"
-                    style="font-size: larger;color: #03a696">{{ $end }}</a>
-            </li>
+                <li class="w-full">
+                    <a href="{{ 'https://fr.wikipedia.org/wiki/' . $start }}" target="_blank"
+                        style="font-size: larger;color: #03a696">{{ $start }}</a>
+                    <p class="inline mx-2">-></p>
+                    <a href="{{ 'https://fr.wikipedia.org/wiki/' . $end }}" target="_blank"
+                        style="font-size: larger;color: #03a696">{{ $end }}</a>
+                </li>
             @endif
         @endif
     </ul>
 </div>
 <script>
-    setInterval(function() {
-        @this.call('loadPath');
-    }, 1000);
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchButton = document.querySelector('.search-button');
+        let intervalId;
+
+        function startLoadPathInterval() {
+            var minutes = 6;
+            var durationInMilliseconds = minutes * 60 * 1000;
+            var timeoutId = setTimeout(function() {
+                clearInterval(intervalId);
+            }, durationInMilliseconds);
+
+            intervalId = setInterval(function() {
+                @this.call('loadPath');
+            }, 1000);
+        }
+
+        searchButton.addEventListener('click', function() {
+            startLoadPathInterval();
+        });
+    });
 </script>

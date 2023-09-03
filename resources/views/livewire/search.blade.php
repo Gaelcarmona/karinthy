@@ -67,8 +67,8 @@
                             </button>
                         </div>
                     </div>
-                    @if ($paths !== null || !$formSubmitted)
-                        <button type="submit" class="text-white font-bold  px-4 rounded my-3"
+                    @if (!$formSubmitted)
+                        <button type="submit" class="text-white font-bold  px-4 rounded my-3 search-button"
                             style="background-color: #03a696">
                             Rechercher
                         </button>

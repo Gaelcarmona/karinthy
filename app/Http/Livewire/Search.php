@@ -9,15 +9,9 @@ class Search extends Component
 {
     public string $start = '';
     public string $end = '';
-    public $paths;
-
     public bool $formSubmitted = false;
-
     public array $startSearchResults = [];
     public array $endSearchResults = [];
-
-    protected $listeners = ['updatePaths' => 'updatePaths'];
-
 
     public function updatedStart()
     {
@@ -90,15 +84,8 @@ class Search extends Component
     public function submit()
     {
         $this->formSubmitted = true;    
-        $this->paths = null;
         $this->emit('searchSubmitted', $this->start, $this->end);
     }
-
-    public function updatePaths($paths)
-{
-    $this->paths = $paths;
-}
-
 
     public function render()
     {
