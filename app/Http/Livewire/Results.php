@@ -38,6 +38,7 @@ class Results extends Component
         if ($path == null) {
             $this->showResults($start, $end);
         }
+        $this->dispatchBrowserEvent('stopScript');
     }
 
     public function showResults($start, $end)
@@ -66,6 +67,7 @@ class Results extends Component
                     'start_entry_id' => $start->id,
                     'end_entry_id' => $end->id,
                 ]);
+                $this->dispatchBrowserEvent('stopScript');
                 return;
             }
         }
@@ -102,6 +104,7 @@ class Results extends Component
         //-------------------------------------------------------------------------------------------------------------------------------------
 
         if ($path !== null) {
+            $this->dispatchBrowserEvent('stopScript');
             return;
         }
         //IIIème niveau de séparation
@@ -134,6 +137,7 @@ class Results extends Component
             }
         }
         if ($path !== null) {
+            $this->dispatchBrowserEvent('stopScript');
             return;
         }
         if (time() - $startTime >= 5 * 60) {
@@ -177,6 +181,7 @@ class Results extends Component
             }
         }
         if ($path !== null) {
+            $this->dispatchBrowserEvent('stopScript');
             return;
         }
         if (time() - $startTime >= 5 * 60) {
@@ -225,6 +230,7 @@ class Results extends Component
             }
         }
         if ($path !== null) {
+            $this->dispatchBrowserEvent('stopScript');
             return;
         }
         if (time() - $startTime >= 5 * 60) {

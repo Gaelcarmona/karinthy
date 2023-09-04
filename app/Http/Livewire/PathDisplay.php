@@ -44,9 +44,6 @@ class PathDisplay extends Component
             ->where('start_entry_id', $this->startId)
             ->where('end_entry_id', $this->endId)
             ->first();
-        if ($this->paths !== null) {
-            $this->emit('updatePaths', $this->paths);
-        }
     }
 
     public function render()
