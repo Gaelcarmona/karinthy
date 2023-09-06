@@ -81,7 +81,7 @@
                                         @endphp
                                         <li>
                                             <p class="p-2 flex block w-full rounded hover:bg-gray-100"
-                                               wire:click="selectStartResult('{{ $resultWithoutLashes }}')">
+                                               wire:click="selectEndResult('{{ $resultWithoutLashes }}')">
                                                 {{ $result }}
                                             </p>
                                         </li>
