@@ -34,7 +34,7 @@
                     <div class="relative mx-3">
                         <input type="text"
                                class="bg-gray-100 focus:bg-white border-solid border-2 border-black rounded-tl rounded-bl w-full text-xl pr-10"
-                               placeholder="Page de départ" wire:model.debounce.250ms="start">
+                               placeholder="Page de départ" wire:model.debounce.750ms="start">
                         <button type="button"
                                 class="absolute inset-y-0 right-0 border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
                                 wire:click="shuffleStart">
@@ -64,7 +64,7 @@
                     <div class="relative mx-3">
                         <input type="text"
                                class="bg-gray-100 focus:bg-white border-solid border-2 border-black rounded-tl rounded-bl w-full text-xl pr-10"
-                               placeholder="Page de départ" wire:model.debounce.250ms="end">
+                               placeholder="Page de départ" wire:model.debounce.750ms="end">
                         <button type="button"
                                 class="absolute inset-y-0 right-0 border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
                                 wire:click="shuffleEnd">

@@ -18,18 +18,20 @@ class Search extends Component
         if ($this->start != '' && strlen($this->start) >= 3) {
             $this->startSearchResults =
                 Entry::query()
-                ->where('paths', '!=', null)
-                ->where('title', 'like', '%' . $this->start . '%')
-                ->limit(5)
-                ->pluck('title')
-                ->toArray();
+                    ->where('paths', '!=', null)
+                    ->where('title', 'like', '%' . $this->start . '%')
+                    ->limit(5)
+                    ->pluck('title')
+                    ->toArray();
+            array_push($this->startSearchResults, $this->start);
         } else {
             $this->startSearchResults = [];
         }
     }
+
     public function selectStartResult($result)
     {
-        $this->start = str_replace(".","'",$result);
+        $this->start = str_replace(".", "'", $result);
         $this->startSearchResults = [];
     }
 
@@ -38,11 +40,12 @@ class Search extends Component
         if ($this->end != '' && strlen($this->end) >= 3) {
             $this->endSearchResults =
                 Entry::query()
-                ->where('paths', '!=', null)
-                ->where('title', 'like', '%' . $this->end . '%')
-                ->limit(5)
-                ->pluck('title')
-                ->toArray();
+                    ->where('paths', '!=', null)
+                    ->where('title', 'like', '%' . $this->end . '%')
+                    ->limit(5)
+                    ->pluck('title')
+                    ->toArray();
+            array_push($this->endSearchResults, $this->end);
         } else {
             $this->endSearchResults = [];
         }
@@ -50,7 +53,7 @@ class Search extends Component
 
     public function selectEndResult($result)
     {
-        $this->end = str_replace(".","'",$result);
+        $this->end = str_replace(".", "'", $result);
         $this->endSearchResults = [];
     }
 
@@ -62,8 +65,8 @@ class Search extends Component
             $randomId = rand(1, 8000000);
             $randomStart =
                 Entry::query()
-                ->where('id', '=', $randomId)
-                ->first();
+                    ->where('id', '=', $randomId)
+                    ->first();
             if ($randomStart != null) {
                 if ($randomStart->paths != null) {
                     $correctEntry = true;
@@ -81,8 +84,8 @@ class Search extends Component
             $randomId = rand(1, 8000000);
             $randomEnd =
                 Entry::query()
-                ->where('id', '=', $randomId)
-                ->first();
+                    ->where('id', '=', $randomId)
+                    ->first();
             if ($randomEnd != null) {
                 if ($randomEnd->paths != null) {
                     $correctEntry = true;
