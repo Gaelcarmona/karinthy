@@ -44,6 +44,10 @@ class PathDisplay extends Component
             ->where('start_entry_id', $this->startId)
             ->where('end_entry_id', $this->endId)
             ->first();
+
+        $pathsData = json_encode($this->paths);
+        $this->dispatchBrowserEvent('updatePathsData', ['pathsData' => $pathsData]);
+
     }
 
     public function render()

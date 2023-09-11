@@ -2,6 +2,10 @@
     <ul style="list-style-type: none;">
         @if ($paths)
             @if ($paths->data !== null)
+                <div class="md:h-172 md:w-172 flex rounded p-3 items-center">
+                    <!-- Ajouter un conteneur SVG pour le graphique -->
+                    <svg id="graphCanvas" width="800" height="600"></svg>
+                </div>
                 @foreach (json_decode($paths->data) as $path)
                     <li class="w-full">
                         <a href="{{ 'https://fr.wikipedia.org/wiki/' . $start }}" target="_blank"
@@ -51,11 +55,42 @@
         }
 
         document.addEventListener('stopScript', function () {
-            clearInterval(intervalId);
+            setTimeout(function () {
+                clearInterval(intervalId);
+            }, 5000);
         });
+
 
         searchButton.addEventListener('click', function () {
             startLoadPathInterval();
+        });
+        document.addEventListener('updatePathsData', function (pathsData) {
+            // console.log(pathsData.detail.pathsData)
+            const updatedPathsData = JSON.parse(pathsData.detail.pathsData);
+            // console.log(updatedPathsData.data);
+            const tableauInitial = JSON.parse(updatedPathsData.data);
+                // console.log(tableauInitial)
+
+            const startEntryId = updatedPathsData.start_entry_id;
+            const endEntryId = updatedPathsData.end_entry_id;
+            const data = {
+                name: String(startEntryId),
+                children: tableauInitial.map(item => {
+                    return {
+                        name: String(item[0]),
+                        children: [
+                            {
+                                name: String(endEntryId),
+                                value: endEntryId
+                            }
+                        ]
+                    };
+                })
+            };
+            console.log(data);
+            console.log(JSON.stringify(data, null, 2));
+
+
         });
     });
 </script>
