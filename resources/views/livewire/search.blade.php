@@ -43,16 +43,16 @@
                     </div>
                     @if (!empty($startSearchResults))
                         <div class="relative mx-3">
-                            <div class="absolute top-full w-full border bg-white shadow-xl rounded mt-1">
+                            <div class="top-full w-full border bg-white shadow-xl rounded mt-1">
                                 <ul class="p-3">
-                                    @foreach ($startSearchResults as $result)
+                                    @foreach ($startSearchResults as $resultStart)
                                         @php
-                                            $resultWithoutLashes = str_replace("'", '.', $result);
+                                            $startResultWithoutLashes = str_replace("'", '.', $resultStart);
                                         @endphp
                                         <li>
                                             <p class="p-2 flex block w-full rounded hover:bg-gray-100"
-                                               wire:click="selectStartResult('{{ $resultWithoutLashes }}')">
-                                                {{ $result }}
+                                               wire:click="selectStartResult('{{ $startResultWithoutLashes }}')">
+                                                {{ $resultStart }}
                                             </p>
                                         </li>
                                     @endforeach
@@ -64,7 +64,7 @@
                     <div class="relative mx-3">
                         <input type="text"
                                class="bg-gray-100 focus:bg-white border-solid border-2 border-black rounded-tl rounded-bl w-full text-xl pr-10"
-                               placeholder="Page de départ" wire:model.debounce.750ms="end">
+                               placeholder="Page d'arrivée" wire:model.debounce.750ms="end">
                         <button type="button"
                                 class="absolute inset-y-0 right-0 border-solid border-2 border-black h-full bg-white rounded-tr rounded-br"
                                 wire:click="shuffleEnd">
@@ -77,11 +77,11 @@
                                 <ul class="p-3">
                                     @foreach ($endSearchResults as $result)
                                         @php
-                                            $resultWithoutLashes = str_replace("'", '.', $result);
+                                            $endResultWithoutLashes = str_replace("'", '.', $result);
                                         @endphp
                                         <li>
                                             <p class="p-2 flex block w-full rounded hover:bg-gray-100"
-                                               wire:click="selectEndResult('{{ $resultWithoutLashes }}')">
+                                               wire:click="selectEndResult('{{ $endResultWithoutLashes }}')">
                                                 {{ $result }}
                                             </p>
                                         </li>
