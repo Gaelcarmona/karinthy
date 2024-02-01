@@ -62,7 +62,7 @@ class Search extends Component
         $correctEntry = false;
 
         while (!$correctEntry) {
-            $randomId = rand(1, 8000000);
+            $randomId = rand(1, 1000000);
             $randomStart =
                 Entry::query()
                     ->where('id', '=', $randomId)
@@ -81,7 +81,7 @@ class Search extends Component
         $correctEntry = false;
 
         while (!$correctEntry) {
-            $randomId = rand(1, 8000000);
+            $randomId = rand(1, 1000000);
             $randomEnd =
                 Entry::query()
                     ->where('id', '=', $randomId)
