@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\AvailableEntry;
 use App\Models\Entry;
 use App\Models\Path;
 use Carbon\Carbon;
@@ -43,13 +42,9 @@ class Results extends Component
 
     public function showResults($start, $end): void
     {
-        $path = false;
-        $path1 = false;
-        $path2 = false;
-        $path3 = false;
-        $startTime = time();
+        $isParent = false;
+        $maxExecutionTime = Carbon::now()->addMinutes(5);
         ini_set('memory_limit', '32768M');
-
         if ($start === null) {
             $this->resultMessages[] = 'Page de départ inconnue ';
             return;
@@ -74,83 +69,104 @@ class Results extends Component
             }
         }
 
+        //IIer niveau de séparation
         $children = Entry::query()->whereIn('id', json_decode($start->paths))->where('paths', '!=', null)->get();
-        foreach ($children as $childKey => $child) {
+        foreach ($children as $child) {
             if (in_array($end->id, json_decode($child->paths))) {
                 $this->storePath($start, $end, $child);
-                $path = true;
+                $isParent = true;
             }
-            if ($path && $childKey === $children->count() - 1) {
-                $this->dispatchBrowserEvent('stopScript');
-                return;
-            }
-            if ($path) {
-                continue;
-            }
+        }
+        if ($isParent) {
+            $this->dispatchBrowserEvent('stopScript');
+            return;
+        }
 
+        //IIIer niveau de séparation
+        foreach ($children as $child) {
             $greatChildren = Entry::query()->whereIn('id', json_decode($child->paths))->where('paths', '!=', null)->get();
-            foreach ($greatChildren as $greatChildKey => $greatChild) {
+            foreach ($greatChildren as $greatChild) {
                 if (in_array($end->id, json_decode($greatChild->paths))) {
                     $this->storePath($start, $end, $child, $greatChild);
-                    $path1 = true;
-                }
-                if ($path1 && $childKey === $children->count() - 1
-                    && $greatChildKey === $greatChildren->count() - 1
-                ) {
-                    $this->dispatchBrowserEvent('stopScript');
-                    return;
-                }
-                if ($path1) {
-                    continue;
-                }
-
-                $greatChildren2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->where('paths', '!=', null)->get();
-                foreach ($greatChildren2 as $greatChild2Key => $greatChild2) {
-                    if (time() - $startTime >= 5 * 60) {
-                        return;
-                    }
-                    if (in_array($end->id, json_decode($greatChild2->paths))) {
-                        $this->storePath($start, $end, $child, $greatChild, $greatChild2);
-                        $path2 = true;
-                    }
-                    if ($path2 && $childKey === $children->count() - 1
-                        && $greatChildKey === $greatChildren->count() - 1
-                        && $greatChild2Key === $greatChildren2->count() - 1
-                    ) {
-                        $this->dispatchBrowserEvent('stopScript');
-                        return;
-                    }
-                    if ($path2) {
-                        continue;
-                    }
-
-//                    $greatChildren3 = Entry::query()->whereIn('id', json_decode($greatChild2->paths))->where('paths', '!=', null)->get();
-//                    foreach ($greatChildren3 as $greatChild3Key => $greatChild3) {
-//                        if (in_array($end->id, json_decode($greatChild3->paths))) {
-//                            $this->storePath($start, $end, $child, $greatChild, $greatChild2, $greatChild3);
-//                            $path3 = true;
-//                        }
-//                        if ($path3 && $childKey === $children->count() - 1
-//                            && $greatChildKey === $greatChildren->count() - 1
-//                            && $greatChild2Key === $greatChildren2->count() - 1
-//                            && $greatChild3Key === $greatChildren3->count() - 1
-//                        ) {
-//                            $this->dispatchBrowserEvent('stopScript');
-//                            return;
-//                        }
-//                        if ($path3) {
-//                            continue;
-//                        }
-//
-//                        $greatChildren4 = Entry::query()->whereIn('id', json_decode($greatChild3->paths))->where('paths', '!=', null)->get();
-//                        foreach ($greatChildren4 as $greatChild4Key => $greatChild4) {
-//                            if (in_array($end->id, json_decode($greatChild4->paths))) {
-//                                $this->storePath($start, $end, $child, $greatChild, $greatChild2, $greatChild3, $greatChild4);
-//                            }
-//                        }
-//                    }
+                    $isParent = true;
                 }
             }
+        }
+        if ($isParent) {
+            $this->dispatchBrowserEvent('stopScript');
+            return;
+        }
+
+        //IVer niveau de séparation
+        foreach ($children as $child) {
+            $greatChildren = Entry::query()->whereIn('id', json_decode($child->paths))->where('paths', '!=', null)->get();
+            foreach ($greatChildren as $greatChild) {
+                if (Carbon::now() > $maxExecutionTime) {
+                    $this->resultMessages[] = "Temps écoulé";
+                }
+                $greatChildren2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->where('paths', '!=', null)->get();
+                foreach ($greatChildren2 as $greatChild2) {
+                    if (in_array($end->id, json_decode($greatChild2->paths))) {
+                        $this->storePath($start, $end, $child, $greatChild, $greatChild2);
+                        $isParent = true;
+                    }
+                }
+            }
+        }
+        if ($isParent) {
+            $this->dispatchBrowserEvent('stopScript');
+            return;
+        }
+
+        //Ver niveau de séparation
+        foreach ($children as $child) {
+            $greatChildren = Entry::query()->whereIn('id', json_decode($child->paths))->where('paths', '!=', null)->get();
+            foreach ($greatChildren as $greatChild) {
+                if (Carbon::now() > $maxExecutionTime) {
+                    $this->resultMessages[] = "Temps écoulé";
+                }
+                $greatChildren2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->where('paths', '!=', null)->get();
+                foreach ($greatChildren2 as $greatChild2) {
+                    $greatChildren3 = Entry::query()->whereIn('id', json_decode($greatChild2->paths))->where('paths', '!=', null)->get();
+                    foreach ($greatChildren3 as $greatChild3) {
+                        if (in_array($end->id, json_decode($greatChild3->paths))) {
+                            $this->storePath($start, $end, $child, $greatChild, $greatChild2, $greatChild3);
+                            $isParent = true;
+                        }
+                    }
+                }
+            }
+        }
+        if ($isParent) {
+            $this->dispatchBrowserEvent('stopScript');
+            return;
+        }
+
+        //VIer niveau de séparation
+        foreach ($children as $child) {
+            $greatChildren = Entry::query()->whereIn('id', json_decode($child->paths))->where('paths', '!=', null)->get();
+            foreach ($greatChildren as $greatChild) {
+                if (Carbon::now() > $maxExecutionTime) {
+                    $this->resultMessages[] = "Temps écoulé";
+                }
+                $greatChildren2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->where('paths', '!=', null)->get();
+                foreach ($greatChildren2 as $greatChild2) {
+                    $greatChildren3 = Entry::query()->whereIn('id', json_decode($greatChild2->paths))->where('paths', '!=', null)->get();
+                    foreach ($greatChildren3 as $greatChild3) {
+                        $greatChildren4 = Entry::query()->whereIn('id', json_decode($greatChild3->paths))->where('paths', '!=', null)->get();
+                        foreach ($greatChildren4 as $greatChild4) {
+                            if (in_array($end->id, json_decode($greatChild4->paths))) {
+                                $this->storePath($start, $end, $child, $greatChild, $greatChild2, $greatChild3, $greatChild4);
+                                $isParent = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if ($isParent) {
+            $this->dispatchBrowserEvent('stopScript');
+            return;
         }
         if (empty($this->resultMessages)) {
             $this->resultMessages[] = "La théorie est fausse ?";
@@ -193,7 +209,7 @@ class Results extends Component
             ];
         } else {
             $newData = [
-                $child->id, $greatChild->id,
+                $child->id,
             ];
         }
         $data[] = $newData;
