@@ -103,6 +103,7 @@ class Results extends Component
             foreach ($greatChildren as $greatChild) {
                 if (Carbon::now() > $maxExecutionTime) {
                     $this->resultMessages[] = "Temps écoulé";
+                    return;
                 }
                 $greatChildren2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->where('paths', '!=', null)->get();
                 foreach ($greatChildren2 as $greatChild2) {
@@ -124,6 +125,7 @@ class Results extends Component
             foreach ($greatChildren as $greatChild) {
                 if (Carbon::now() > $maxExecutionTime) {
                     $this->resultMessages[] = "Temps écoulé";
+                    return;
                 }
                 $greatChildren2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->where('paths', '!=', null)->get();
                 foreach ($greatChildren2 as $greatChild2) {
@@ -148,6 +150,7 @@ class Results extends Component
             foreach ($greatChildren as $greatChild) {
                 if (Carbon::now() > $maxExecutionTime) {
                     $this->resultMessages[] = "Temps écoulé";
+                    return;
                 }
                 $greatChildren2 = Entry::query()->whereIn('id', json_decode($greatChild->paths))->where('paths', '!=', null)->get();
                 foreach ($greatChildren2 as $greatChild2) {
