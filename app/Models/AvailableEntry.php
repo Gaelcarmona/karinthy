@@ -11,7 +11,6 @@ class AvailableEntry extends Model
 {
     use HasFactory;
 
-
     protected $guarded = [];
 
     public function url(): BelongsTo
@@ -23,10 +22,12 @@ class AvailableEntry extends Model
     {
         return $this->hasMany(AvailableEntry::class, 'parent_entry_id', 'child_entry_id');
     }
+
     public function parents(): HasMany
     {
         return $this->hasMany(AvailableEntry::class, 'child_entry_id', 'parent_entry_id');
     }
+
     public function parentEntry(): BelongsTo
     {
         return $this->belongsTo(Entry::class, 'parent_entry_id', 'id');
@@ -36,5 +37,4 @@ class AvailableEntry extends Model
     {
         return $this->belongsTo(Entry::class, 'child_entry_id', 'id');
     }
-
 }
